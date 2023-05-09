@@ -114,19 +114,12 @@ tar.distance = 1200
 tar.drawTarget()
 
 const wind = new Wind() // z-axis affects y-axis
-// wind.xSpeed = 0
-// wind.ySpeed = 0
-// wind.zSpeed = 0
 wind.randomWind()
 
 // wind.xSpeed = 20
 // wind.ySpeed = 0
 // wind.zSpeed = 0
 
-// sniper.x = 50 // click
-// sniper.y = 52 // click
-// sniper.shotAngle = 90
-// sniper.shot(wind, tar)
 const printData = () => { 
     document.querySelector(
       "#wind-data"
@@ -172,7 +165,5 @@ sight.addEventListener("mousedown", function (e) {
 
   document.querySelector(
     "#shot-data"
-  ).innerHTML = `End shot = [${shot[0].toFixed()}, ${shot[1].toFixed()}, ${shot[2].toFixed()}] @ ${shot[3].toFixed(
-    3
-  )}s`
+  ).innerHTML = `End shot = [${shot[0].toFixed()}, ${shot[1].toFixed()}, ${shot[2].toFixed()}] @ t = ${shot[3].toFixed(3)}s`
 })
