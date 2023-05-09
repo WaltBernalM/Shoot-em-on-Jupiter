@@ -77,7 +77,7 @@ const getCursorPosition = (canvas, event) => {
 
 const drawClick = () => {
   const img = new Image()
-  img.src = "./bang-icon.jpg"
+  img.src = "/Images/bang-icon.jpg"
   img.onload = () => ctx.drawImage(img, click[0] - 20, click[1] - 20, 40, 40)
 }
 
@@ -87,7 +87,7 @@ const print = (arr, color, perfect) => {
     ctx.fillRect(arr[0], arr[1], 5, 5)
   } else {
     const img = new Image()
-    img.src = "./bullet-hole.png"
+    img.src = "/Images/bullet-hole.png"
     img.onload = () => ctx.drawImage(img, arr[0] - 7, arr[1] - 7, 14, 14)
   }
 }
