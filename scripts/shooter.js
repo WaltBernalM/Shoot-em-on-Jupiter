@@ -2,13 +2,16 @@
 // Shooting Range
 
 const sight = document.getElementById("sight")
-const sightW = sight.getAttribute("width")
-const sightH = sight.getAttribute("height")
 const ctx = sight.getContext("2d")
-const ratio = 0.4
 
+let ratio = 0.5
 let click = []
 let shot = []
+let requestId 
+let gameFrames = 0
+let level = 0
+
+let animeFlag = true
 
 const rifles = [
   {
@@ -60,61 +63,29 @@ const Difficulty = [
   },
 ]
 
-const bulb = new Image()
-bulb.src = "./bulb.png"
-bulb.onload = () => ctx.drawImage(img, 60, 60, 40, 40)
-
-const spawnArea = new TargetSpawnArea(ratio)
-spawnArea.draw()
-
-// function to get actual position to canvas
-const getCursorPosition = (canvas, event) => {
-  const rect = canvas.getBoundingClientRect()
-  const x = event.clientX - rect.left
-  const y = event.clientY - rect.top
-  return [x, y]
+function clearCanvas() {
+  const clearWidth = sight.width * ratio
+  const clearHeight = sight.height * ratio
+  const clearX = sight.width / 2 - clearWidth / 2
+  const clearY = sight.height / 2 - clearHeight / 2
+  // ctx.clearRect(0, 0, sight.width, sight.height)
+  ctx.clearRect(clearX, clearY, clearWidth, clearHeight)
 }
 
-const drawClick = () => {
-  const img = new Image()
-  img.src = "/Images/bang-icon.jpg"
-  img.onload = () => ctx.drawImage(img, click[0] - 20, click[1] - 20, 40, 40)
-}
-
-const print = (arr, color, perfect) => {
-  if (perfect) {
-    ctx.fillStyle = color
-    ctx.fillRect(arr[0], arr[1], 5, 5)
-  } else {
-    const img = new Image()
-    img.src = "/Images/bullet-hole.png"
-    img.onload = () => ctx.drawImage(img, arr[0] - 7, arr[1] - 7, 14, 14)
+function duckAnimation() {
+  if (animeFlag && gameFrames % 8 === 0) { 
+    tar.animate++
+  }
+  if (tar.animate === 3) {
+    animeFlag = false
+  }
+  if (!animeFlag && gameFrames % 8 === 0) {
+    tar.animate--
+  }
+  if (!animeFlag && tar.animate === 0) {
+    animeFlag = true
   }
 }
-
-const translateShotPos = (cursorPos) => {
-  const x = cursorPos[0] * 0.4 + 240
-  const y = cursorPos[1] * 0.4 + 120
-  const z = cursorPos[2]
-  const shotPos = [x, y, z]
-  return shotPos
-}
-
-const rifle = new SniperGun()
-const sniper = new Sniper(rifle)
-
-// rifle.bulletSpeed = 800
-
-const tar = new Target()
-tar.x = 350
-tar.y = 200
-tar.w = 20
-tar.l = 20
-tar.distance = 1200
-tar.drawTarget()
-
-const wind = new Wind() // z-axis affects y-axis
-wind.randomWind()
 
 // wind.xSpeed = 20
 // wind.ySpeed = 0
@@ -135,35 +106,36 @@ const printData = () => {
 
     document.querySelector(
       "#sniper-data"
-    ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]`
+    ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
 }
 
-printData()
+function gameEngine() {
+  gameFrames++
+  // console.log("gameFrames", gameFrames)
 
-// Event listener to get the mouse position
-sight.addEventListener("mousedown", function (e) {
-  click = getCursorPosition(sight, e)
-  drawClick()
-  sniper.x = click[0]
-  sniper.y = click[1]
+  clearCanvas()
+  spawnArea.draw()
+  tar.draw()
+  tar.x++
+  duckAnimation()
 
   printData()
+  bulletHole.draw()
+  
+  bang.draw()
 
-  const tShot = translateShotPos(click)
-  sniper.x = Number(tShot[0].toFixed())
-  sniper.y = Number(tShot[1].toFixed())
-  ctx.globalAlpha = 0.2
-  print(tShot, "blue", true) // Perfect shot
-  ctx.globalAlpha = 1
+  if (requestId) {
+    requestAnimationFrame(gameEngine)
+  }
+}
 
-  document.querySelector(
-    "#sniper-data-trans"
-  ).innerHTML = `Ideal shot = [${sniper.x}, ${sniper.y}]`
+function startGame() {
+  if (!requestId) {
+    requestId = requestAnimationFrame(gameEngine)
+    // console.log('requestId: ', requestId)
+  }
+}
 
-  shot = sniper.shot(wind, tar)
-  print(shot, "black", false) // Shot
-
-  document.querySelector(
-    "#shot-data"
-  ).innerHTML = `End shot = [${shot[0].toFixed()}, ${shot[1].toFixed()}, ${shot[2].toFixed()}] @ t = ${shot[3].toFixed(3)}s`
-})
+window.onload = () => {
+  startGame()
+}

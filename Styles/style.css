@@ -1,5 +1,11 @@
+body, html {
+  cursor: default;
+}
+
 canvas {
-  border: 1px solid red
+  border: 1px solid red;
+  cursor: crosshair;
+  cursor: url("/Images/gun-pointer.png") 55 55, default;
 }
 
 section {
@@ -7,4 +13,5 @@ section {
   font-weight: bold; 
   font-family: 'Courier New', 
   Courier, monospace;
+  
 }

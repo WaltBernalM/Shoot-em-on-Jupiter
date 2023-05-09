@@ -6,15 +6,37 @@ class TargetSpawnArea {
     this.spawnH = sight.height * this.ratio
     this.spawnX = sight.width / 2 - this.spawnW / 2
     this.spawnY = sight.height / 2 - this.spawnH / 2
+    
+    this.img = new Image()
+    this.img.src = "/Images/background.jpg"
+    this.img.onload = () => { this.draw() }
+    
+    this.backgroundW = sight.width + sight.width / (1 - this.ratio)
+    this.backgroundH = sight.height + sight.height / (1 - this.ratio)
+    this.backgroundX = sight.width / 2 - this.backgroundW / 2
+
+    this.zoom = -0.452 * this.ratio**3 + 0.0943* this.ratio**2 + 0.3511 * this.ratio + 1.2743
+    this.backgroundY = (sight.height / 2) - this.backgroundH / (this.zoom)
+    
+    console.log(ratio)
+    console.log(this.backgroundW, this.backgroundH)
+    console.log(this.backgroundX, this.backgroundY)
   }
 
   draw() {
-    ctx.globalAlpha = 0.2
-    ctx.fillStyle = "yellow"
-    ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
-    
+    ctx.drawImage(
+      this.img,
+      this.backgroundX,
+      this.backgroundY,
+      this.backgroundW,
+      this.backgroundH
+    )
     ctx.globalAlpha = 0.3
-    ctx.fillStyle = "red"
+    ctx.fillStyle = "white"
+    ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
+    ctx.globalAlpha = 1
+
+    ctx.globalAlpha = 1
     ctx.beginPath()
     ctx.moveTo(0, 0)
     ctx.lineTo(this.spawnX, this.spawnY)
@@ -42,20 +64,34 @@ class SniperGun {
 }
 
 class Target {
-  constructor() {
-    this.x = 0 // m, lateral position of the target
-    this.y = 0 // m, height of the target
-    this.distance = 20 // m, distance to the target from the sniper position (z axis)
-
-    this.l = 20
-    this.w = 20
+  constructor(spawnArea) {
+    this.distance = 0 // m, distance to the target from the sniper position (z axis)
+    this.height = spawnArea.spawnH / 1.5
+    this.width = spawnArea.spawnW / 4
+    this.x = Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
+    this.y = spawnArea.spawnY + spawnArea.spawnH - this.height * 0.92 // m, height of the target
+    this.animate = 0 // Animation sequence value
+    this.position = 2 // select position of the sprite
+    this.img = new Image()
+    this.img.src = "/Images/duckhunt.png" // 375 x 267
+    this.img.onload = () => {
+      this.draw()
+    }
   }
 
-  drawTarget = () => {
-    ctx.beginPath()
-    ctx.fillStyle = "red"
-    ctx.fillRect(this.x, this.y, this.w, this.l)
-    ctx.closePath()
+  draw() {
+    ctx.globalAlpha = 1
+    ctx.drawImage(
+      this.img,
+      (this.animate * 375) / 9,
+      (this.position * 267) / 4.9,
+      35,
+      38,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    )
   }
 }
 
@@ -71,8 +107,7 @@ class Wind {
 
   randomWind = () => {
     const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
-    const rand = () => Math.floor((Math.random() * 20) + 1) * negRand()
-
+    const rand = () => Math.floor((Math.random() * 5) + 0.1) * negRand()
     this.xSpeed = rand()
     this.ySpeed = rand()
     this.zSpeed = rand()
@@ -83,11 +118,15 @@ class Sniper {
   constructor(rifle) {
     this.x = 0 // m, position in x
     this.y = 0 // m, position in y
+    this.z = 0
     this.rifle = rifle
     this.shotAngle = 90
+    this.ammo = 5
+    this.img = new Image()
+    this.img.src = "/Images/ammo-8-bit-sprite.png"
   }
-  z = 0
 
+  // 3D Parabolic shot engine 
   shot = (wind, target) => {
     const g = 9.81 // acceleration due to gravity
     const rho = wind.rho // air density
@@ -95,11 +134,11 @@ class Sniper {
     const A = this.rifle.bulletFrontalArea // projectile forntal area
     const m = this.rifle.bulletMass // projectile mass
     const v0 = this.rifle.bulletSpeed // m/s, initial velocity of the bullet
-    const x0 = sniper.x // initial x position
-    const y0 = sniper.y // initial y position
-    const z0 = sniper.z // initial z position
-    const theta = (sniper.shotAngle * Math.PI) / 180 // Launch angle (radians)
-    const dt = 0.000001 // s, time step
+    const x0 = this.x // initial x position
+    const y0 = this.y // initial y position
+    const z0 = this.z // initial z position
+    const theta = (this.shotAngle * Math.PI) / 180 // Launch angle (radians)
+    const dt = 0.001 // s, time step
 
     // Variables
     let x = x0 // projectile x-axis position
@@ -152,7 +191,7 @@ class Sniper {
       ]
 
       if (y <= 0 || x <= 0) break //  if the projectile exit the plane break the loop
-      if (y >= sightH || x >= sightW) break
+      if (y >= sight.height || x >= sight.width) break
     }
 
     if (
@@ -164,5 +203,60 @@ class Sniper {
     }
 
     return [x, y, z, t]
+  }
+}
+
+class BulletHole {
+  constructor(shot) {
+    this.x = shot[0]
+    this.y = shot[1]
+    this.width = 20
+    this.height = 20
+    this.img = new Image()
+    this.img.src = '/Images/bullet-hole.png'
+    this.img.onload = () => {
+      this.draw()
+    }
+  }
+
+  draw() {
+    if (
+      this.x < spawnArea.spawnW + spawnArea.spawnX &&
+      this.x > spawnArea.spawnX &&
+      this.y < spawnArea.spawnY + spawnArea.spawnH &&
+      this.y > spawnArea.spawnY
+    ) {
+      ctx.drawImage(
+        this.img,
+        this.x - this.width / 2,
+        this.y - this.height / 2,
+        this.width,
+        this.height
+      )
+    }
+  }
+}
+
+class Bang {
+  constructor(click) {
+    this.x = click[0]
+    this.y = click[1]
+    this.width = sight.width * 0.05
+    this.height = sight.height * 0.10
+    this.img = new Image()
+    this.img.src = '/Images/bang-icon.jpg'
+    this.img.onload = () => {
+      this.draw()
+    }
+  }
+
+  draw() {
+    ctx.drawImage(
+      this.img,
+      this.x - this.width / 2,
+      this.y - this.height / 2,
+      this.width,
+      this.height
+    )
   }
 }
