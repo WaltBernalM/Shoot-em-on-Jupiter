@@ -17,10 +17,6 @@ class TargetSpawnArea {
 
     this.zoom = -0.452 * this.ratio**3 + 0.0943* this.ratio**2 + 0.3511 * this.ratio + 1.2743
     this.backgroundY = (sight.height / 2) - this.backgroundH / (this.zoom)
-    
-    // console.log(ratio)
-    // console.log(this.backgroundW, this.backgroundH)
-    // console.log(this.backgroundX, this.backgroundY)
   }
 
   draw() {
@@ -37,6 +33,7 @@ class TargetSpawnArea {
     ctx.globalAlpha = 1
 
     ctx.globalAlpha = 1
+    ctx.fillStyle = "black"
     ctx.beginPath()
     ctx.moveTo(0, 0)
     ctx.lineTo(this.spawnX, this.spawnY)
@@ -66,18 +63,15 @@ class SniperGun {
 class Target {
   constructor(spawnArea) {
     this.distance = 0 // m, distance to the target from the sniper position (z axis)
-    this.height = spawnArea.spawnH / 1.5
-    this.width = spawnArea.spawnW / (4 / ratio)
-    this.x = -this.width//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
-    this.y = spawnArea.spawnY + spawnArea.spawnH - this.height * 0.92 // m, height of the target
+    this.height = spawnArea.spawnH / 3
+    this.width = spawnArea.spawnW / (8 / ratio)
+    this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
+    this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the target
     this.animate = 0 // Animation sequence value
     this.position = 0 // select position of the sprite
     this.flyDuck = new Image()
     this.flyDuck.src = "/Images/duckhunt.png" // 375 x 267
     this.flyDuck.onload = () => {
-      // Dead duck test
-      
-
       this.draw()
     }
 
@@ -85,37 +79,26 @@ class Target {
     this.shotDuck.src = "/Images/duckhunt.png" // 375 x 267
   }
 
+  randomSpawn() {
+    this.x = -this.width
+    this.y = Math.floor(
+      (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
+    )
+  }
+
   draw() {
     ctx.globalAlpha = 1
-
-    // Flying duck
-    this.position = 4
     ctx.drawImage(
       this.flyDuck,
       (this.animate * 375) / 9,
       (this.position * 267) / 9.2068965,
       35,
-      30,
+      35,
       this.x,
       this.y,
       this.width,
       this.height
     )
-
-    // shot duck
-    // this.position = 6
-    // this.animate = 0
-    // ctx.drawImage(
-    //   this.flyDuck,
-    //   (this.animate * 375) / 9,
-    //   (this.position * 267) / 9.2068965,
-    //   35,
-    //   30,
-    //   this.x,
-    //   this.y,
-    //   this.width,
-    //   this.height
-    // )
   }
 }
 

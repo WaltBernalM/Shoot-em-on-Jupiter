@@ -4,6 +4,7 @@ const rifle = new SniperGun()
 const sniper = new Sniper(rifle)
 
 const tar = new Target(spawnArea)
+tar.randomSpawn()
 tar.distance = 1000
 
 const wind = new Wind() // z-axis affects y-axis

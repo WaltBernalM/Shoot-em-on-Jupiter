@@ -4,7 +4,7 @@
 const sight = document.getElementById("sight")
 const ctx = sight.getContext("2d")
 
-let ratio = 0.4
+let ratio = 0.5
 let click = []
 let shot = []
 let requestId 
@@ -12,6 +12,7 @@ let gameFrames = 0
 let level = 0
 
 let animeFlag = true
+let targetDown = false
 
 const rifles = [
   {
@@ -72,46 +73,76 @@ function clearCanvas() {
   ctx.clearRect(clearX, clearY, clearWidth, clearHeight)
 }
 
-function duckAnimation() {
-  if (animeFlag && gameFrames % 8 === 0) { 
-    tar.animate++
-  }
-  if (tar.animate === 3) {
-    animeFlag = false
-  }
-  if (!animeFlag && gameFrames % 8 === 0) {
-    tar.animate--
-  }
-  if (!animeFlag && tar.animate === 0) {
-    animeFlag = true
-  }
-}
-
 const printData = () => { 
-    document.querySelector(
-      "#wind-data"
-    ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
+  document.querySelector(
+    "#wind-data"
+  ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
 
-    document.querySelector(
-      "#target-data"
-    ).innerHTML = `Target = [${tar.x}, ${tar.y} ,${tar.distance}]`
+  document.querySelector(
+    "#target-data"
+  ).innerHTML = `Target = [${tar.x}, ${tar.y} ,${tar.distance}]`
 
-    document.querySelector(
-      "#rifle-data"
-    ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
+  document.querySelector(
+    "#rifle-data"
+  ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
 
-    document.querySelector(
-      "#sniper-data"
-    ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
+  document.querySelector(
+    "#sniper-data"
+  ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
+
+  document.querySelector(
+      "#frames"
+  ).innerHTML = `game frames = ${gameFrames}
+    target down = ${targetDown}`
 }
 
 function targetHitted() {
   if (shot[0] > tar.x && shot[0] < tar.x + tar.width && shot[1] > tar.y && shot[1] < tar.y + tar.height) {
+    targetDown = true
     return true
   } else {
+    targetDown = false
     return false
   }
   
+}
+
+function duckAnimation() {
+  if (!targetHitted() && !targetDown) {
+    tar.position = 4
+    if (animeFlag && gameFrames % 8 === 0) {
+      tar.animate++
+    }
+    if (tar.animate === 3) {
+      animeFlag = false
+    }
+    if (!animeFlag && gameFrames % 8 === 0) {
+      tar.animate--
+    }
+    if (!animeFlag && tar.animate === 0) {
+      animeFlag = true
+    }
+    tar.x += ratio * 10
+  } else if (targetHitted() && targetDown) {
+    tar.x = tar.x
+    tar.position = 8
+    tar.animate = 0
+    tar.draw()
+    if (tar.y < sight.height) {
+      tar.y++
+      shot[1] += 1
+    } else {
+      targetDown = false
+      tar.x = -tar.width
+      tar.randomSpawn()
+      tar.draw()
+    }
+  }
+
+  if (tar.x > sight.width) {
+    tar.randomSpawn()
+  }
+
 }
 
 function gameEngine() {
@@ -121,7 +152,6 @@ function gameEngine() {
   clearCanvas()
   spawnArea.draw()
   tar.draw()
-  // tar.x++
 
   duckAnimation()
 
@@ -129,8 +159,6 @@ function gameEngine() {
 
   hit.draw()
   bang.draw()
-
-  targetHitted()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
