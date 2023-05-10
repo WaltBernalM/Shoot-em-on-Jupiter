@@ -18,9 +18,9 @@ class TargetSpawnArea {
     this.zoom = -0.452 * this.ratio**3 + 0.0943* this.ratio**2 + 0.3511 * this.ratio + 1.2743
     this.backgroundY = (sight.height / 2) - this.backgroundH / (this.zoom)
     
-    console.log(ratio)
-    console.log(this.backgroundW, this.backgroundH)
-    console.log(this.backgroundX, this.backgroundY)
+    // console.log(ratio)
+    // console.log(this.backgroundW, this.backgroundH)
+    // console.log(this.backgroundX, this.backgroundY)
   }
 
   draw() {
@@ -71,27 +71,51 @@ class Target {
     this.x = -this.width//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
     this.y = spawnArea.spawnY + spawnArea.spawnH - this.height * 0.92 // m, height of the target
     this.animate = 0 // Animation sequence value
-    this.position = 2 // select position of the sprite
+    this.position = 0 // select position of the sprite
     this.flyDuck = new Image()
     this.flyDuck.src = "/Images/duckhunt.png" // 375 x 267
     this.flyDuck.onload = () => {
+      // Dead duck test
+      
+
       this.draw()
     }
+
+    this.shotDuck = new Image()
+    this.shotDuck.src = "/Images/duckhunt.png" // 375 x 267
   }
 
   draw() {
     ctx.globalAlpha = 1
+
+    // Flying duck
+    this.position = 4
     ctx.drawImage(
       this.flyDuck,
       (this.animate * 375) / 9,
-      (this.position * 267) / 4.9,
+      (this.position * 267) / 9.2068965,
       35,
-      38,
+      30,
       this.x,
       this.y,
       this.width,
       this.height
     )
+
+    // shot duck
+    // this.position = 6
+    // this.animate = 0
+    // ctx.drawImage(
+    //   this.flyDuck,
+    //   (this.animate * 375) / 9,
+    //   (this.position * 267) / 9.2068965,
+    //   35,
+    //   30,
+    //   this.x,
+    //   this.y,
+    //   this.width,
+    //   this.height
+    // )
   }
 }
 
@@ -206,33 +230,48 @@ class Sniper {
   }
 }
 
-class BulletHole {
+class Hit {
   constructor(shot) {
     this.x = shot[0]
     this.y = shot[1]
     this.width = 20
     this.height = 20
-    this.img = new Image()
-    this.img.src = '/Images/bullet-hole.png'
-    this.img.onload = () => {
+    this.bulletHole = new Image()
+    this.bulletHole.src = '/Images/bullet-hole.png'
+    this.bulletHole.onload = () => {
+      this.draw()
+    }
+    this.hit = new Image()
+    this.hit.src = '/Images/shot-icon.jpg'
+    this.hit.onload = () => {
       this.draw()
     }
   }
 
   draw() {
-    if (
-      // this.x < spawnArea.spawnW + spawnArea.spawnX &&
-      // this.x > spawnArea.spawnX &&
-      this.y < spawnArea.spawnY + spawnArea.spawnH //&&
-      // this.y > spawnArea.spawnY
-    ) {
-      ctx.drawImage(
-        this.img,
-        this.x - this.width / 2,
-        this.y - this.height / 2,
-        this.width,
-        this.height
-      )
+    if (this.y < spawnArea.spawnY + spawnArea.spawnH) {
+      if (this.x > tar.x && this.x < tar.x + tar.width
+        && this.y > tar.y && this.y < tar.y + tar.height) {
+        this.width = 40
+        this.height = 40
+        ctx.drawImage(
+          this.hit,
+          this.x - this.width / 2,
+          this.y - this.height / 2,
+          this.width,
+          this.height
+        )
+      } else {
+        this.width = 20
+        this.height = 20
+        ctx.drawImage(
+          this.bulletHole,
+          this.x - this.width / 2,
+          this.y - this.height / 2,
+          this.width,
+          this.height
+        )
+      }
     }
   }
 }
@@ -241,10 +280,10 @@ class Bang {
   constructor(click) {
     this.x = click[0]
     this.y = click[1]
-    this.width = sight.width * 0.05
-    this.height = sight.height * 0.10
+    this.width = sight.width * 0.075
+    this.height = sight.height * 0.15
     this.img = new Image()
-    this.img.src = '/Images/bang-icon.jpg'
+    this.img.src = '/Images/bang-icon.png'
     this.img.onload = () => {
       this.draw()
     }

@@ -12,6 +12,6 @@ wind.randomWind()
 // wind.ySpeed = 10
 // wind.zSpeed = 10
 
-const bulletHole = new BulletHole(shot)
 
 const bang = new Bang(click)
+const hit = new Hit(shot)

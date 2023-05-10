@@ -39,8 +39,8 @@ sight.addEventListener("mousedown", function (e) {
 
   shot = sniper.shot(wind, tar)
   // print(shot, "black", false) // Shot
-  bulletHole.x = shot[0]
-  bulletHole.y = shot[1]
+  hit.x = shot[0]
+  hit.y = shot[1]
 
   document.querySelector(
     "#shot-data"

@@ -4,7 +4,7 @@
 const sight = document.getElementById("sight")
 const ctx = sight.getContext("2d")
 
-let ratio = 0.1
+let ratio = 0.4
 let click = []
 let shot = []
 let requestId 
@@ -40,7 +40,7 @@ const rifles = [
   },
 ]
 
-const Difficulty = [
+const Level = [
   {
     planet: "Earth",
     gravity: 9.807,
@@ -105,8 +105,13 @@ const printData = () => {
     ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
 }
 
-function checkShot() {
-
+function targetHitted() {
+  if (shot[0] > tar.x && shot[0] < tar.x + tar.width && shot[1] > tar.y && shot[1] < tar.y + tar.height) {
+    return true
+  } else {
+    return false
+  }
+  
 }
 
 function gameEngine() {
@@ -116,13 +121,16 @@ function gameEngine() {
   clearCanvas()
   spawnArea.draw()
   tar.draw()
-  tar.x = 40
+  // tar.x++
+
   duckAnimation()
 
   printData()
-  bulletHole.draw()
-  
+
+  hit.draw()
   bang.draw()
+
+  targetHitted()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
@@ -132,7 +140,6 @@ function gameEngine() {
 function startGame() {
   if (!requestId) {
     requestId = requestAnimationFrame(gameEngine)
-    // console.log('requestId: ', requestId)
   }
 }
 
