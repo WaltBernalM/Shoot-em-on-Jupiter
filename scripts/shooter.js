@@ -97,18 +97,19 @@ const printData = () => {
 }
 
 function targetHitted() {
-  if (shot[0] > tar.x && shot[0] < tar.x + tar.width && shot[1] > tar.y && shot[1] < tar.y + tar.height) {
-    targetDown = true
+  if (shot[0] > tar.x &&
+    shot[0] < tar.x + tar.width &&
+    shot[1] > tar.y &&
+    shot[1] < tar.y + tar.height) {
     return true
   } else {
-    targetDown = false
     return false
   }
   
 }
 
 function duckAnimation() {
-  if (!targetHitted() && !targetDown) {
+  if (!targetDown) {
     tar.position = 4
     if (animeFlag && gameFrames % 8 === 0) {
       tar.animate++
@@ -123,7 +124,7 @@ function duckAnimation() {
       animeFlag = true
     }
     tar.x += ratio * 10
-  } else if (targetHitted() && targetDown) {
+  } else if (targetDown) {
     tar.x = tar.x
     tar.position = 8
     tar.animate = 0
@@ -137,6 +138,8 @@ function duckAnimation() {
       tar.randomSpawn()
       tar.draw()
     }
+
+    console.log
   }
 
   if (tar.x > sight.width) {

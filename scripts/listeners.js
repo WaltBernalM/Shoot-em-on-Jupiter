@@ -37,10 +37,21 @@ sight.addEventListener("mousedown", function (e) {
     "#sniper-data-trans"
   ).innerHTML = `Ideal shot = [${sniper.x}, ${sniper.y}]`
 
-  shot = sniper.shot(wind, tar)
-  // print(shot, "black", false) // Shot
-  hit.x = shot[0]
-  hit.y = shot[1]
+  shot = sniper.shot(wind, tar) // runs the physics logic to  get the shot position
+  hit.x = shot[0] // helps to draw the endShot x
+  hit.y = shot[1] // helps to draw the endShot y
+
+
+  // Detects if at the moment of the click, the target was hit
+  if (shot[0] > tar.x &&
+    shot[0] < tar.x + tar.width &&
+    shot[1] > tar.y &&
+    shot[1] < tar.y + tar.height) {
+    targetDown = true
+    console.log(shot[0], tar.x) 
+  } else {
+    targetDown = false
+  }
 
   document.querySelector(
     "#shot-data"
