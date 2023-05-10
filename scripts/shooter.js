@@ -4,7 +4,7 @@
 const sight = document.getElementById("sight")
 const ctx = sight.getContext("2d")
 
-let ratio = 0.5
+let ratio = 0.1
 let click = []
 let shot = []
 let requestId 
@@ -87,10 +87,6 @@ function duckAnimation() {
   }
 }
 
-// wind.xSpeed = 20
-// wind.ySpeed = 0
-// wind.zSpeed = 0
-
 const printData = () => { 
     document.querySelector(
       "#wind-data"
@@ -109,6 +105,10 @@ const printData = () => {
     ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
 }
 
+function checkShot() {
+
+}
+
 function gameEngine() {
   gameFrames++
   // console.log("gameFrames", gameFrames)
@@ -116,7 +116,7 @@ function gameEngine() {
   clearCanvas()
   spawnArea.draw()
   tar.draw()
-  tar.x++
+  tar.x = 40
   duckAnimation()
 
   printData()

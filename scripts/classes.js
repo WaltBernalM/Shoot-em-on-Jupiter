@@ -2,9 +2,9 @@
 class TargetSpawnArea {
   constructor(ratio) {
     this.ratio = ratio
-    this.spawnW = sight.width * this.ratio
+    this.spawnW = sight.width //* this.ratio
     this.spawnH = sight.height * this.ratio
-    this.spawnX = sight.width / 2 - this.spawnW / 2
+    this.spawnX = 0//sight.width / 2 - this.spawnW / 2
     this.spawnY = sight.height / 2 - this.spawnH / 2
     
     this.img = new Image()
@@ -67,14 +67,14 @@ class Target {
   constructor(spawnArea) {
     this.distance = 0 // m, distance to the target from the sniper position (z axis)
     this.height = spawnArea.spawnH / 1.5
-    this.width = spawnArea.spawnW / 4
-    this.x = Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
+    this.width = spawnArea.spawnW / (4 / ratio)
+    this.x = -this.width//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
     this.y = spawnArea.spawnY + spawnArea.spawnH - this.height * 0.92 // m, height of the target
     this.animate = 0 // Animation sequence value
     this.position = 2 // select position of the sprite
-    this.img = new Image()
-    this.img.src = "/Images/duckhunt.png" // 375 x 267
-    this.img.onload = () => {
+    this.flyDuck = new Image()
+    this.flyDuck.src = "/Images/duckhunt.png" // 375 x 267
+    this.flyDuck.onload = () => {
       this.draw()
     }
   }
@@ -82,7 +82,7 @@ class Target {
   draw() {
     ctx.globalAlpha = 1
     ctx.drawImage(
-      this.img,
+      this.flyDuck,
       (this.animate * 375) / 9,
       (this.position * 267) / 4.9,
       35,
@@ -221,10 +221,10 @@ class BulletHole {
 
   draw() {
     if (
-      this.x < spawnArea.spawnW + spawnArea.spawnX &&
-      this.x > spawnArea.spawnX &&
-      this.y < spawnArea.spawnY + spawnArea.spawnH &&
-      this.y > spawnArea.spawnY
+      // this.x < spawnArea.spawnW + spawnArea.spawnX &&
+      // this.x > spawnArea.spawnX &&
+      this.y < spawnArea.spawnY + spawnArea.spawnH //&&
+      // this.y > spawnArea.spawnY
     ) {
       ctx.drawImage(
         this.img,
