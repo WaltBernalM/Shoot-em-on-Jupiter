@@ -33,8 +33,13 @@ class TargetSpawnArea {
     ctx.globalAlpha = 1
 
     // ctx.globalAlpha = 0.3
-    // ctx.fillStyle = "white"
-    // ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
+    // ctx.fillStyle = "black"
+    // ctx.fillRect(
+    //   sight.width / 2 - (sight.width * this.ratio) / 2,
+    //   this.spawnY,
+    //   sight.width * this.ratio,
+    //   this.spawnH
+    // )
     // ctx.globalAlpha = 1
   }
 }

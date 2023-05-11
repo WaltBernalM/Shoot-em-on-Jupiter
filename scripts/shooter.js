@@ -195,6 +195,30 @@ function ammoAnimation() {
   }
 }
 
+function animateDistance() {
+  const touchPointX = (sight.width / 2 - (sight.width * world.ratio) / 2) / 1.7
+
+  ctx.strokeStyle = "white"
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(0, sight.height)
+  ctx.lineTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
+  ctx.closePath()
+  ctx.stroke()
+
+  ctx.beginPath()
+  ctx.moveTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
+  ctx.lineTo(touchPointX - 30, spawnArea.spawnY + spawnArea.spawnH + 17)
+  ctx.lineTo(touchPointX - 12, spawnArea.spawnY + spawnArea.spawnH + 17)
+  ctx.closePath()
+  ctx.fillStyle = "white"
+  ctx.fill()
+  
+  ctx.font = "14px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(`${duck.distance.toFixed()}m`, 20, sight.height - 5)
+}
+
 function gameEngine() {
   gameFrames++
 
@@ -208,6 +232,7 @@ function gameEngine() {
   hit.draw()
   duck.draw()
   bang.draw()
+  animateDistance()
 
   gameOver()
 
