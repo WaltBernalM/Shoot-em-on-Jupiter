@@ -58,7 +58,7 @@ sight.addEventListener("mousedown", function (e) {
   ) {
     targetDown = true
     huntCount += 1
-    score += 1 * (world.level + 1)
+    score += Number((duck.distance / 10).toFixed()) 
     if(sniper.ammo < 4) sniper.ammo += 1
   } else {
     // targetDown = false

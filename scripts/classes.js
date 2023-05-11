@@ -27,6 +27,11 @@ class TargetSpawnArea {
       this.backgroundW,
       this.backgroundH
     )
+    ctx.globalAlpha = 0.3
+    ctx.fillStyle = 'yellow'
+    ctx.fillRect(0, 0, sight.width, sight.height)
+    ctx.globalAlpha = 1
+
     // ctx.globalAlpha = 0.3
     // ctx.fillStyle = "white"
     // ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
@@ -70,6 +75,23 @@ class Duck {
       (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
     )
   }
+
+
+  // Mirror Duck
+  // ctx.save();
+  // ctx.scale(-1, 1);
+  // ctx.drawImage(
+  // this.flyDuck,
+  // (this.animate * 375) / 9,
+  // (this.position * 267) / 9.2068965,
+  // 35,
+  // 35,
+  // -this.x - this.width, // Adjust x and width to match the negative scale
+  // this.y,
+  // this.width,
+  // this.height
+  // );
+  // ctx.restore();
 
   draw() {
     ctx.globalAlpha = 1
