@@ -60,13 +60,13 @@ class SniperGun {
   }
 }
 
-class Target {
+class Duck {
   constructor(spawnArea) {
-    this.distance = 0 // m, distance to the target from the sniper position (z axis)
+    this.distance = 0 // m, distance to the Duck from the sniper position (z axis)
     this.height = spawnArea.spawnH / 3
     this.width = spawnArea.spawnW / (8 / ratio)
-    this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the target
-    this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the target
+    this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the Duck
+    this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the Duck
     this.animate = 0 // Animation sequence value
     this.position = 0 // select position of the sprite
     this.flyDuck = new Image()
@@ -134,7 +134,7 @@ class Sniper {
   }
 
   // 3D Parabolic shot engine 
-  shot = (wind, target) => {
+  shot = (wind, Duck) => {
     const g = 9.81 // acceleration due to gravity
     const rho = wind.rho // air density
     const Cd = wind.Cd // air drag coefficient
@@ -167,7 +167,7 @@ class Sniper {
     const rand = () => Math.floor(Math.random() * 0.2) * negRand()
 
     // Simulation loop
-    while (z < target.distance) {
+    while (z < Duck.distance) {
       // Calculate wind variables
       const v = Math.sqrt(
         wind.xSpeed ** 2 + wind.ySpeed ** 2 + wind.zSpeed ** 2
@@ -202,11 +202,11 @@ class Sniper {
     }
 
     if (
-      x.toFixed() === target.x.toFixed() &&
-      y.toFixed() === target.y.toFixed() &&
-      z.toFixed() === target.distance.toFixed()
+      x.toFixed() === Duck.x.toFixed() &&
+      y.toFixed() === Duck.y.toFixed() &&
+      z.toFixed() === Duck.distance.toFixed()
     ) {
-      console.log("Target down!")
+      console.log("Duck down!")
     }
 
     return [x, y, z, t]
@@ -232,9 +232,8 @@ class Hit {
   }
 
   draw() {
-    if (this.y < spawnArea.spawnY + spawnArea.spawnH) {
-      if (this.x > tar.x && this.x < tar.x + tar.width
-        && this.y > tar.y && this.y < tar.y + tar.height) {
+    if (this.y < spawnArea.spawnY + spawnArea.spawnH) { // only draws at "wall"
+      if (targetDown) {
         this.width = 40
         this.height = 40
         ctx.drawImage(

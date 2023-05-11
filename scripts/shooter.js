@@ -70,7 +70,7 @@ function clearCanvas() {
   const clearX = sight.width / 2 - clearWidth / 2
   const clearY = sight.height / 2 - clearHeight / 2
   // ctx.clearRect(0, 0, sight.width, sight.height)
-  ctx.clearRect(clearX, clearY, clearWidth, clearHeight)
+  ctx.clearRect(0, 0, sight.width, sight.length)
 }
 
 const printData = () => { 
@@ -80,7 +80,7 @@ const printData = () => {
 
   document.querySelector(
     "#target-data"
-  ).innerHTML = `Target = [${tar.x}, ${tar.y} ,${tar.distance}]`
+  ).innerHTML = `Target = [${duck.x}, ${duck.y} ,${duck.distance}]`
 
   document.querySelector(
     "#rifle-data"
@@ -97,10 +97,10 @@ const printData = () => {
 }
 
 function targetHitted() {
-  if (shot[0] > tar.x &&
-    shot[0] < tar.x + tar.width &&
-    shot[1] > tar.y &&
-    shot[1] < tar.y + tar.height) {
+  if (shot[0] > duck.x &&
+    shot[0] < duck.x + duck.width &&
+    shot[1] > duck.y &&
+    shot[1] < duck.y + duck.height) {
     return true
   } else {
     return false
@@ -110,40 +110,51 @@ function targetHitted() {
 
 function duckAnimation() {
   if (!targetDown) {
-    tar.position = 4
+    duck.position = 4
     if (animeFlag && gameFrames % 8 === 0) {
-      tar.animate++
+      duck.animate++
     }
-    if (tar.animate === 3) {
+    if (duck.animate === 3) {
       animeFlag = false
     }
     if (!animeFlag && gameFrames % 8 === 0) {
-      tar.animate--
+      duck.animate--
     }
-    if (!animeFlag && tar.animate === 0) {
+    if (!animeFlag && duck.animate === 0) {
       animeFlag = true
     }
-    tar.x += ratio * 10
+    duck.x += ratio * 10
   } else if (targetDown) {
-    tar.x = tar.x
-    tar.position = 8
-    tar.animate = 0
-    tar.draw()
-    if (tar.y < sight.height) {
-      tar.y++
-      shot[1] += 1
+    duck.x = duck.x
+    duck.position = 8
+    
+    if (duck.y + duck.height < spawnArea.spawnH + spawnArea.spawnY) {
+      duck.animate = 0
     } else {
+      duck.animate = 1
+      bang.x = - 30
+      bang.y = - 30
+    }
+
+    duck.draw()
+    hit.draw()
+
+    if (duck.y < sight.height) {
+      duck.y += 3
+      hit.y += 3
+    } else { // if the target is not hit, spawns randomly
       targetDown = false
-      tar.x = -tar.width
-      tar.randomSpawn()
-      tar.draw()
+      duck.x = -duck.width
+      duck.randomSpawn()
+      duck.draw()
     }
 
     console.log
   }
 
-  if (tar.x > sight.width) {
-    tar.randomSpawn()
+  if (duck.x > sight.width) {
+    duck.randomSpawn()
+    wind.randomWind()
   }
 
 }
@@ -154,13 +165,11 @@ function gameEngine() {
 
   clearCanvas()
   spawnArea.draw()
-  tar.draw()
-
-  duckAnimation()
-
+  
   printData()
-
   hit.draw()
+  duck.draw()
+  duckAnimation()
   bang.draw()
 
   if (requestId) {

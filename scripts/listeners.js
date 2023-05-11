@@ -2,8 +2,6 @@
 
 // Event listener to get the mouse position
 sight.addEventListener("mousedown", function (e) {
-  e.preventDefault()
-
   const getCursorPosition = (canvas, event) => {
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
@@ -20,12 +18,8 @@ sight.addEventListener("mousedown", function (e) {
   }
 
   click = getCursorPosition(sight, e)
-  bang.x = click[0]
-  bang.y = click[1]
-
   sniper.x = click[0]
   sniper.y = click[1]
-  sniper.ammo--
 
   printData()
 
@@ -37,20 +31,31 @@ sight.addEventListener("mousedown", function (e) {
     "#sniper-data-trans"
   ).innerHTML = `Ideal shot = [${sniper.x}, ${sniper.y}]`
 
-  shot = sniper.shot(wind, tar) // runs the physics logic to  get the shot position
-  hit.x = shot[0] // helps to draw the endShot x
-  hit.y = shot[1] // helps to draw the endShot y
 
+  shot = sniper.shot(wind, duck) // runs the physics logic to  get the shot position
+  
 
+  // Animation control for missed target, prevents unwanted animations
+  if (!targetDown) {
+    sniper.ammo-- // prevents the user from waisting bullets while the duck is falling
+
+    bang.x = click[0] // Prevent user interaction while duck is falling
+    bang.y = click[1]
+
+    hit.x = shot[0] // helps to draw the endShot x
+    hit.y = shot[1] // helps to draw the endShot y
+  }
+  
   // Detects if at the moment of the click, the target was hit
-  if (shot[0] > tar.x &&
-    shot[0] < tar.x + tar.width &&
-    shot[1] > tar.y &&
-    shot[1] < tar.y + tar.height) {
+  if (
+    shot[0] > duck.x + 0.25 * duck.width &&
+    shot[0] < duck.x + 0.75 * duck.width &&
+    shot[1] > duck.y &&
+    shot[1] < duck.y + duck.height
+  ) {
     targetDown = true
-    console.log(shot[0], tar.x) 
   } else {
-    targetDown = false
+    // targetDown = false
   }
 
   document.querySelector(

@@ -3,9 +3,9 @@ const spawnArea = new TargetSpawnArea(ratio)
 const rifle = new SniperGun()
 const sniper = new Sniper(rifle)
 
-const tar = new Target(spawnArea)
-tar.randomSpawn()
-tar.distance = 1000
+const duck = new Duck(spawnArea)
+duck.randomSpawn()
+duck.distance = 1000
 
 const wind = new Wind() // z-axis affects y-axis
 wind.randomWind()
