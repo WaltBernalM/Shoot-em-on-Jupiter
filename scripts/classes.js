@@ -2,31 +2,45 @@
 class TargetSpawnArea {
   constructor(ratio) {
     this.ratio = ratio
-    this.spawnW = sight.width * this.ratio
+    this.spawnW = sight.width //* this.ratio
     this.spawnH = sight.height * this.ratio
-    this.spawnX = sight.width / 2 - this.spawnW / 2
+    this.spawnX = 0//sight.width / 2 - this.spawnW / 2
     this.spawnY = sight.height / 2 - this.spawnH / 2
+    
+    this.img = new Image()
+    this.img.src = "./Images/background.jpg"
+    this.img.onload = () => { this.draw() }
+    
+    this.backgroundW = sight.width + sight.width / (1 - this.ratio)
+    this.backgroundH = sight.height + sight.height / (1 - this.ratio)
+    this.backgroundX = sight.width / 2 - this.backgroundW / 2
+
+    this.zoom = -0.452 * this.ratio**3 + 0.0943* this.ratio**2 + 0.3511 * this.ratio + 1.2743
+    this.backgroundY = (sight.height / 2) - this.backgroundH / (this.zoom)
   }
 
   draw() {
-    ctx.globalAlpha = 0.2
-    ctx.fillStyle = "yellow"
-    ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
-    
+    ctx.drawImage(
+      this.img,
+      this.backgroundX,
+      this.backgroundY,
+      this.backgroundW,
+      this.backgroundH
+    )
     ctx.globalAlpha = 0.3
-    ctx.fillStyle = "red"
-    ctx.beginPath()
-    ctx.moveTo(0, 0)
-    ctx.lineTo(this.spawnX, this.spawnY)
-    ctx.moveTo(sight.width, 0)
-    ctx.lineTo(this.spawnX + this.spawnW, this.spawnY)
-    ctx.moveTo(0, sight.height)
-    ctx.lineTo(this.spawnX, this.spawnY + this.spawnH)
-    ctx.moveTo(sight.width, sight.height)
-    ctx.lineTo(this.spawnX + this.spawnW, this.spawnY + this.spawnH)
-    ctx.stroke()
-    ctx.closePath()
+    ctx.fillStyle = 'yellow'
+    ctx.fillRect(0, 0, sight.width, sight.height)
     ctx.globalAlpha = 1
+
+    // ctx.globalAlpha = 0.3
+    // ctx.fillStyle = "black"
+    // ctx.fillRect(
+    //   sight.width / 2 - (sight.width * this.ratio) / 2,
+    //   this.spawnY,
+    //   sight.width * this.ratio,
+    //   this.spawnH
+    // )
+    // ctx.globalAlpha = 1
   }
 }
 
@@ -41,25 +55,65 @@ class SniperGun {
   }
 }
 
-class Target {
-  constructor() {
-    this.x = 0 // m, lateral position of the target
-    this.y = 0 // m, height of the target
-    this.distance = 20 // m, distance to the target from the sniper position (z axis)
+class Duck {
+  constructor(spawnArea) {
+    this.distance = 0 // m, distance to the Duck from the sniper position (z axis)
+    this.height = spawnArea.spawnH / 3
+    this.width = spawnArea.spawnW / (8 / world.ratio)
+    this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the Duck
+    this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the Duck
+    this.animate = 0 // Animation sequence value
+    this.position = 0 // select position of the sprite
+    this.flyDuck = new Image()
+    this.flyDuck.src = "./Images/duckhunt.png" // 375 x 267
+    this.flyDuck.onload = () => {
+      this.draw()
+    }
 
-    this.l = 20
-    this.w = 20
+    this.shotDuck = new Image()
+    this.shotDuck.src = "./Images/duckhunt.png" // 375 x 267
   }
 
-  drawTarget = () => {
-    ctx.beginPath()
-    ctx.fillStyle = "red"
-    ctx.fillRect(this.x, this.y, this.w, this.l)
-    ctx.closePath()
+  randomSpawn() {
+    this.x = -this.width
+    this.y = Math.floor(
+      (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
+    )
+  }
+
+
+  // Mirror Duck
+  // ctx.save();
+  // ctx.scale(-1, 1);
+  // ctx.drawImage(
+  // this.flyDuck,
+  // (this.animate * 375) / 9,
+  // (this.position * 267) / 9.2068965,
+  // 35,
+  // 35,
+  // -this.x - this.width, // Adjust x and width to match the negative scale
+  // this.y,
+  // this.width,
+  // this.height
+  // );
+  // ctx.restore();
+
+  draw() {
+    ctx.globalAlpha = 1
+    ctx.drawImage(
+      this.flyDuck,
+      (this.animate * 375) / 9,
+      (this.position * 267) / 9.2068965,
+      35,
+      35,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    )
   }
 }
 
-// wind.randomWind() // Creates random wind conditions (limited to axis 20m/s => vector 34m/s)
 class Wind {
   constructor() {
     this.xSpeed = 0 // wind speed
@@ -71,8 +125,7 @@ class Wind {
 
   randomWind = () => {
     const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
-    const rand = () => Math.floor((Math.random() * 20) + 1) * negRand()
-
+    const rand = () => Math.floor((Math.random() * 5) + 0.1) * negRand()
     this.xSpeed = rand()
     this.ySpeed = rand()
     this.zSpeed = rand()
@@ -83,23 +136,53 @@ class Sniper {
   constructor(rifle) {
     this.x = 0 // m, position in x
     this.y = 0 // m, position in y
+    this.z = 0
     this.rifle = rifle
     this.shotAngle = 90
+    this.ammo = 5
+    
+    this.img = new Image()
+    this.imgW = 70
+    this.imgH = 100
+    this.imgX = sight.width - this.imgW
+    this.imgY = 0
+    this.img.src = "./Images/ammo-8-bit-sprite.png"
+    this.img.onload = () => {
+      this.drawAmmo()
+    }
   }
-  z = 0
 
-  shot = (wind, target) => {
+  drawAmmo() {
+    const x = 1035
+    const y = 241
+    
+    ctx.globalAlpha = 1
+    ctx.drawImage( // 1035 x 41
+      this.img,
+      (this.animate * x) / 6,
+      0,
+      x / 6,
+      y,
+      this.imgX,
+      this.imgY,
+      this.imgW,
+      this.imgH
+    )
+  }
+
+  // 3D Parabolic shot engine 
+  shot(wind, Duck) {
     const g = 9.81 // acceleration due to gravity
     const rho = wind.rho // air density
     const Cd = wind.Cd // air drag coefficient
     const A = this.rifle.bulletFrontalArea // projectile forntal area
     const m = this.rifle.bulletMass // projectile mass
     const v0 = this.rifle.bulletSpeed // m/s, initial velocity of the bullet
-    const x0 = sniper.x // initial x position
-    const y0 = sniper.y // initial y position
-    const z0 = sniper.z // initial z position
-    const theta = (sniper.shotAngle * Math.PI) / 180 // Launch angle (radians)
-    const dt = 0.000001 // s, time step
+    const x0 = this.x // initial x position
+    const y0 = this.y // initial y position
+    const z0 = this.z // initial z position
+    const theta = (this.shotAngle * Math.PI) / 180 // Launch angle (radians)
+    const dt = 0.001 // s, time step
 
     // Variables
     let x = x0 // projectile x-axis position
@@ -121,7 +204,7 @@ class Sniper {
     const rand = () => Math.floor(Math.random() * 0.2) * negRand()
 
     // Simulation loop
-    while (z < target.distance) {
+    while (z < Duck.distance) {
       // Calculate wind variables
       const v = Math.sqrt(
         wind.xSpeed ** 2 + wind.ySpeed ** 2 + wind.zSpeed ** 2
@@ -152,17 +235,159 @@ class Sniper {
       ]
 
       if (y <= 0 || x <= 0) break //  if the projectile exit the plane break the loop
-      if (y >= sightH || x >= sightW) break
+      if (y >= sight.height || x >= sight.width) break
     }
 
     if (
-      x.toFixed() === target.x.toFixed() &&
-      y.toFixed() === target.y.toFixed() &&
-      z.toFixed() === target.distance.toFixed()
+      x.toFixed() === Duck.x.toFixed() &&
+      y.toFixed() === Duck.y.toFixed() &&
+      z.toFixed() === Duck.distance.toFixed()
     ) {
-      console.log("Target down!")
+      console.log("Duck down!")
     }
 
     return [x, y, z, t]
   }
+}
+
+class Hit {
+  constructor(shot) {
+    this.x = shot[0]
+    this.y = shot[1]
+    this.width = 20
+    this.height = 20
+    this.bulletHole = new Image()
+    this.bulletHole.src = './Images/bullet-hole.png'
+    this.bulletHole.onload = () => {
+      this.draw()
+    }
+    this.hit = new Image()
+    this.hit.src = './Images/shot-icon.jpg'
+    this.hit.onload = () => {
+      this.draw()
+    }
+  }
+
+  draw() {
+    if (this.y < spawnArea.spawnY + spawnArea.spawnH) { // only draws at "wall"
+      if (targetDown) {
+        this.width = 40
+        this.height = 40
+        ctx.drawImage(
+          this.hit,
+          this.x - this.width / 2,
+          this.y - this.height / 2,
+          this.width,
+          this.height
+        )
+      } else {
+        this.width = 20
+        this.height = 20
+        ctx.drawImage(
+          this.bulletHole,
+          this.x - this.width / 2,
+          this.y - this.height / 2,
+          this.width,
+          this.height
+        )
+      }
+    }
+  }
+}
+
+class Bang {
+  constructor(click) {
+    this.x = click[0]
+    this.y = click[1]
+    this.width = sight.width * 0.075
+    this.height = sight.height * 0.15
+    this.img = new Image()
+    this.img.src = './Images/bang-icon.png'
+    this.img.onload = () => {
+      this.draw()
+    }
+  }
+
+  draw() {
+    ctx.drawImage(
+      this.img,
+      this.x - this.width / 2,
+      this.y - this.height / 2,
+      this.width,
+      this.height
+    )
+  }
+}
+
+class World {
+  constructor() { 
+    this.level = 0
+    this.distance = 0
+    this.ratio = 0
+    this.distance = 0
+    // this.gravity = 0
+  }
+
+  createWorld() {
+    const randomRatio = (min, max) =>  Math.random() * (max- min) +min
+    const distancePerRatio = (r) => -2000 * r + 2000
+
+    switch (this.level) {
+      case 0:
+        this.ratio = randomRatio(0.75, 0.8)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 1:
+        this.ratio = randomRatio(0.7, 0.75)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 2:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 3:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 4:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 5:
+        this.ratio = randomRatio(0.4, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 6:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 7:
+        this.ratio = randomRatio(0.30, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        return
+    }
+  }
+
+  // planetG = [
+  //   {
+  //     planet: "Earth",
+  //     gravity: 9.807,
+  //   },
+  //   {
+  //     planet: "Saturn",
+  //     gravity: 10.44,
+  //   },
+  //   {
+  //     planet: "Neptune",
+  //     gravity: 11.15,
+  //   },
+  //   {
+  //     planet: "Jupiter",
+  //     gravity: 24.79,
+  //   },
+  //   {
+  //     planet: "Sun",
+  //     gravity: 274.0,
+  //   },
+  // ]
 }

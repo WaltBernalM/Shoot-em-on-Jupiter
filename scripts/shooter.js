@@ -2,13 +2,18 @@
 // Shooting Range
 
 const sight = document.getElementById("sight")
-const sightW = sight.getAttribute("width")
-const sightH = sight.getAttribute("height")
 const ctx = sight.getContext("2d")
-const ratio = 0.4
 
 let click = []
 let shot = []
+let requestId 
+let gameFrames = 0
+
+let animeFlag = true
+let targetDown = false
+let huntCount = 0
+let duckSpawns = 0
+let score = 0
 
 const rifles = [
   {
@@ -37,133 +42,211 @@ const rifles = [
   },
 ]
 
-const Difficulty = [
-  {
-    planet: "Earth",
-    gravity: 9.807,
-  },
-  {
-    planet: "Saturn",
-    gravity: 10.44,
-  },
-  {
-    planet: "Neptune",
-    gravity: 11.15,
-  },
-  {
-    planet: "Jupiter",
-    gravity: 24.79,
-  },
-  {
-    planet: "Sun",
-    gravity: 274.0,
-  },
-]
-
-const bulb = new Image()
-bulb.src = "./bulb.png"
-bulb.onload = () => ctx.drawImage(img, 60, 60, 40, 40)
-
-const spawnArea = new TargetSpawnArea(ratio)
-spawnArea.draw()
-
-// function to get actual position to canvas
-const getCursorPosition = (canvas, event) => {
-  const rect = canvas.getBoundingClientRect()
-  const x = event.clientX - rect.left
-  const y = event.clientY - rect.top
-  return [x, y]
+function clearCanvas() {
+  ctx.clearRect(0, 0, sight.width, sight.length)
 }
 
-const drawClick = () => {
-  const img = new Image()
-  img.src = "/Images/bang-icon.jpg"
-  img.onload = () => ctx.drawImage(img, click[0] - 20, click[1] - 20, 40, 40)
+function printData() { 
+  document.querySelector(
+    "#wind-data"
+  ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
+
+  document.querySelector(
+    "#target-data"
+  ).innerHTML = `Target = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}]`
+
+  document.querySelector(
+    "#rifle-data"
+  ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
+
+  document.querySelector(
+    "#sniper-data"
+  ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
+
+  document.querySelector(
+      "#frames"
+  ).innerHTML = `game frames = ${gameFrames};
+    target down = ${targetDown};
+    duck spawns = ${duckSpawns};
+    hunt count = ${huntCount};
+    world ratio = ${world.ratio.toFixed(2)}; level = ${world.level}`
+  
+  ctx.font = "20px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(`Score: ${score}`, sight.width / 2 - 40, 20)
+
+  ctx.font = "14px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(`Level: ${world.level + 1}`, sight.width / 2 - 25, 40)
 }
 
-const print = (arr, color, perfect) => {
-  if (perfect) {
-    ctx.fillStyle = color
-    ctx.fillRect(arr[0], arr[1], 5, 5)
-  } else {
-    const img = new Image()
-    img.src = "/Images/bullet-hole.png"
-    img.onload = () => ctx.drawImage(img, arr[0] - 7, arr[1] - 7, 14, 14)
+function gameOver() {
+  if (sniper.ammo <= 0 || (huntCount < 3 && duckSpawns === 10)) {
+    ctx.fillStyle = "black"
+    ctx.globalAlpha = 0.8
+    ctx.fillRect(0, 0, sight.width, sight.height)
+
+    ctx.font = "80px Arial"
+    ctx.fillStyle = "white"
+    ctx.fillText('Game Over', sight.width / 2 - 200, sight.height / 2)
+
+    ctx.font = "30px Arial"
+    ctx.fillText(`Final score: ${score}`, sight.width / 2 - 90, sight.height / 2 + 40)
+    requestId = cancelAnimationFrame(requestId)
   }
 }
 
-const translateShotPos = (cursorPos) => {
-  const x = cursorPos[0] * 0.4 + 240
-  const y = cursorPos[1] * 0.4 + 120
-  const z = cursorPos[2]
-  const shotPos = [x, y, z]
-  return shotPos
+function levelControl() {
+    if (world.level < 7) {
+      if (sniper.ammo >= 0 && huntCount >= 3) {
+        world.level += 1
+        duckSpawns = 0
+        huntCount = 0
+        sniper.ammo = 5
+
+        world.createWorld()
+        spawnArea = new TargetSpawnArea(world.ratio)
+        duck = new Duck(spawnArea)
+        duck.distance = world.distance
+        clearCanvas()
+        spawnArea.draw()
+        duck.randomSpawn()
+        duck.draw()
+      }
+    } else {
+      world.level = 7
+    }
 }
 
-const rifle = new SniperGun()
-const sniper = new Sniper(rifle)
+function duckAnimation() {
+  if (!targetDown) {
+    duck.position = 4
+    if (animeFlag && gameFrames % 8 === 0) {
+      duck.animate++
+    }
+    if (duck.animate === 3) {
+      animeFlag = false
+    }
+    if (!animeFlag && gameFrames % 8 === 0) {
+      duck.animate--
+    }
+    if (!animeFlag && duck.animate === 0) {
+      animeFlag = true
+    }
+    duck.x += world.ratio * 5 // movement of duck
+  } else if (targetDown) {
+    duck.x = duck.x
+    duck.position = 8
+    
+    if (duck.y + duck.height < spawnArea.spawnH + spawnArea.spawnY) {
+      duck.animate = 0
+    } else {
+      duck.animate = 1
+      bang.x = - 30
+      bang.y = - 30
+    }
 
-// rifle.bulletSpeed = 800
+    clearCanvas()
+    duck.draw()
+    hit.draw()
 
-const tar = new Target()
-tar.x = 350
-tar.y = 200
-tar.w = 20
-tar.l = 20
-tar.distance = 1200
-tar.drawTarget()
+    if (duck.y < sight.height) { // falldown of the duck after being shot
+      duck.y += 3
+      hit.y += 3
+    } else { // if the target falls down away from sight appears randomly at the left
+      targetDown = false
+      wind.randomWind()
+      levelControl()
+      duck.randomSpawn()
+    }
+  }
 
-const wind = new Wind() // z-axis affects y-axis
-wind.randomWind()
-
-// wind.xSpeed = 20
-// wind.ySpeed = 0
-// wind.zSpeed = 0
-
-const printData = () => { 
-    document.querySelector(
-      "#wind-data"
-    ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
-
-    document.querySelector(
-      "#target-data"
-    ).innerHTML = `Target = [${tar.x}, ${tar.y} ,${tar.distance}]`
-
-    document.querySelector(
-      "#rifle-data"
-    ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
-
-    document.querySelector(
-      "#sniper-data"
-    ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]`
+  // Re-spawn duck if it exits the spawn area width
+  if (duck.x > sight.width) {
+    duck.randomSpawn()
+    duckSpawns++
+    wind.randomWind()
+  }
 }
 
-printData()
+function ammoAnimation() {
+  switch (sniper.ammo) {
+    case 5:
+      sniper.animate = 0
+      return
+    case 4:
+      sniper.animate = 1
+      return
+    case 3:
+      sniper.animate = 2
+      return
+    case 2:
+      sniper.animate = 3
+      return
+    case 1:
+      sniper.animate = 4
+      return
+    case 0:
+      sniper.animate = 5
+      return
+    default:
+      sniper.animate = 5
+      return
+  }
+}
 
-// Event listener to get the mouse position
-sight.addEventListener("mousedown", function (e) {
-  click = getCursorPosition(sight, e)
-  drawClick()
-  sniper.x = click[0]
-  sniper.y = click[1]
+function animateDistance() {
+  const touchPointX = (sight.width / 2 - (sight.width * world.ratio) / 2) / 1.7
 
+  ctx.strokeStyle = "white"
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(0, sight.height)
+  ctx.lineTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
+  ctx.closePath()
+  ctx.stroke()
+
+  ctx.beginPath()
+  ctx.moveTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
+  ctx.lineTo(touchPointX - 30, spawnArea.spawnY + spawnArea.spawnH + 17)
+  ctx.lineTo(touchPointX - 12, spawnArea.spawnY + spawnArea.spawnH + 17)
+  ctx.closePath()
+  ctx.fillStyle = "white"
+  ctx.fill()
+  
+  ctx.font = "14px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(`${duck.distance.toFixed()}m`, 20, sight.height - 5)
+}
+
+function gameEngine() {
+  gameFrames++
+
+  duckAnimation()
+  clearCanvas()
+  spawnArea.draw()
   printData()
 
-  const tShot = translateShotPos(click)
-  sniper.x = Number(tShot[0].toFixed())
-  sniper.y = Number(tShot[1].toFixed())
-  ctx.globalAlpha = 0.2
-  print(tShot, "blue", true) // Perfect shot
-  ctx.globalAlpha = 1
+  sniper.drawAmmo()
+  ammoAnimation()
+  hit.draw()
+  duck.draw()
+  bang.draw()
+  animateDistance()
 
-  document.querySelector(
-    "#sniper-data-trans"
-  ).innerHTML = `Ideal shot = [${sniper.x}, ${sniper.y}]`
+  gameOver()
 
-  shot = sniper.shot(wind, tar)
-  print(shot, "black", false) // Shot
+  if (requestId) {
+    requestAnimationFrame(gameEngine)
+  }
+}
 
-  document.querySelector(
-    "#shot-data"
-  ).innerHTML = `End shot = [${shot[0].toFixed()}, ${shot[1].toFixed()}, ${shot[2].toFixed()}] @ t = ${shot[3].toFixed(3)}s`
-})
+function startGame() {
+  if (!requestId) {
+    requestId = requestAnimationFrame(gameEngine)
+  }
+}
+
+window.onload = () => {
+  startGame()
+}
