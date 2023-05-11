@@ -27,25 +27,10 @@ class TargetSpawnArea {
       this.backgroundW,
       this.backgroundH
     )
-    ctx.globalAlpha = 0.3
-    ctx.fillStyle = "white"
-    ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
-    ctx.globalAlpha = 1
-
-    ctx.globalAlpha = 1
-    ctx.fillStyle = "black"
-    ctx.beginPath()
-    ctx.moveTo(0, 0)
-    ctx.lineTo(this.spawnX, this.spawnY)
-    ctx.moveTo(sight.width, 0)
-    ctx.lineTo(this.spawnX + this.spawnW, this.spawnY)
-    ctx.moveTo(0, sight.height)
-    ctx.lineTo(this.spawnX, this.spawnY + this.spawnH)
-    ctx.moveTo(sight.width, sight.height)
-    ctx.lineTo(this.spawnX + this.spawnW, this.spawnY + this.spawnH)
-    ctx.stroke()
-    ctx.closePath()
-    ctx.globalAlpha = 1
+    // ctx.globalAlpha = 0.3
+    // ctx.fillStyle = "white"
+    // ctx.fillRect(this.spawnX, this.spawnY, this.spawnW, this.spawnH)
+    // ctx.globalAlpha = 1
   }
 }
 
@@ -84,7 +69,6 @@ class Duck {
     this.y = Math.floor(
       (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
     )
-    duckSpawns++
   }
 
   draw() {
@@ -318,28 +302,40 @@ class World {
   }
 
   createWorld() {
-    const randomRatio = (max, min) =>  Math.random() * (max- min) +min
+    const randomRatio = (min, max) =>  Math.random() * (max- min) +min
     const distancePerRatio = (r) => -2000 * r + 2000
 
     switch (this.level) {
       case 0:
-        this.ratio = randomRatio(0.8, 0.7)
+        this.ratio = randomRatio(0.75, 0.8)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 1: 
-        this.ratio = randomRatio(0.7, 0.6)
+      case 1:
+        this.ratio = randomRatio(0.7, 0.75)
         this.distance = distancePerRatio(this.ratio)
         return
       case 2:
-        this.ratio = randomRatio(0.6, 0.5)
+        this.ratio = randomRatio(0.65, 0.7)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 3: 
-        this.ratio = randomRatio(0.5, 0.4)
+      case 3:
+        this.ratio = randomRatio(0.6, 0.65)
         this.distance = distancePerRatio(this.ratio)
         return
       case 4:
-        this.ratio = randomRatio(0.4, 0.3)
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 5:
+        this.ratio = randomRatio(0.4, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 6:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 7:
+        this.ratio = randomRatio(0.30, 0.35)
         this.distance = distancePerRatio(this.ratio)
         return
     }

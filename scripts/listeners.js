@@ -10,8 +10,8 @@ sight.addEventListener("mousedown", function (e) {
   }
 
   const translateShotPos = (cursorPos) => {
-    const x = cursorPos[0] * ratio + (sight.width * (1 - ratio)) / 2
-    const y = cursorPos[1] * ratio + (sight.height * (1 - ratio)) / 2
+    const x = cursorPos[0] * world.ratio + (sight.width * (1 - world.ratio)) / 2
+    const y = cursorPos[1] * world.ratio + (sight.height * (1 - world.ratio)) / 2
     const z = cursorPos[2]
     const shotPos = [x, y, z]
     return shotPos
@@ -37,7 +37,8 @@ sight.addEventListener("mousedown", function (e) {
 
   // Animation control for missed target, prevents unwanted animations
   if (!targetDown) {
-    sniper.ammo-- // prevents the user from waisting bullets while the duck is falling
+    
+    if (sniper.ammo > 0)sniper.ammo-- // prevents the user from waisting bullets while the duck is falling
     
 
 
@@ -56,8 +57,9 @@ sight.addEventListener("mousedown", function (e) {
     shot[1] < duck.y + duck.height
   ) {
     targetDown = true
-    huntCount++
-    if(sniper.ammo < 5) sniper.ammo += 2
+    huntCount += 1
+    score += 1 * (world.level + 1)
+    if(sniper.ammo < 4) sniper.ammo += 1
   } else {
     // targetDown = false
   }
