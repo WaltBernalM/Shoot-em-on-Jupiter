@@ -64,7 +64,7 @@ class Duck {
   constructor(spawnArea) {
     this.distance = 0 // m, distance to the Duck from the sniper position (z axis)
     this.height = spawnArea.spawnH / 3
-    this.width = spawnArea.spawnW / (8 / ratio)
+    this.width = spawnArea.spawnW / (8 / world.ratio)
     this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the Duck
     this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the Duck
     this.animate = 0 // Animation sequence value
@@ -84,6 +84,7 @@ class Duck {
     this.y = Math.floor(
       (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
     )
+    duckSpawns++
   }
 
   draw() {
@@ -102,7 +103,6 @@ class Duck {
   }
 }
 
-// wind.randomWind() // Creates random wind conditions (limited to axis 20m/s => vector 34m/s)
 class Wind {
   constructor() {
     this.xSpeed = 0 // wind speed
@@ -129,12 +129,38 @@ class Sniper {
     this.rifle = rifle
     this.shotAngle = 90
     this.ammo = 5
+    
     this.img = new Image()
+    this.imgW = 70
+    this.imgH = 100
+    this.imgX = sight.width - this.imgW
+    this.imgY = 0
     this.img.src = "/Images/ammo-8-bit-sprite.png"
+    this.img.onload = () => {
+      this.drawAmmo()
+    }
+  }
+
+  drawAmmo() {
+    const x = 1035
+    const y = 241
+    
+    ctx.globalAlpha = 1
+    ctx.drawImage( // 1035 x 41
+      this.img,
+      (this.animate * x) / 6,
+      0,
+      x / 6,
+      y,
+      this.imgX,
+      this.imgY,
+      this.imgW,
+      this.imgH
+    )
   }
 
   // 3D Parabolic shot engine 
-  shot = (wind, Duck) => {
+  shot(wind, Duck) {
     const g = 9.81 // acceleration due to gravity
     const rho = wind.rho // air density
     const Cd = wind.Cd // air drag coefficient
@@ -280,4 +306,65 @@ class Bang {
       this.height
     )
   }
+}
+
+class World {
+  constructor() { 
+    this.level = 0
+    this.distance = 0
+    this.ratio = 0
+    this.distance = 0
+    // this.gravity = 0
+  }
+
+  createWorld() {
+    const randomRatio = (max, min) =>  Math.random() * (max- min) +min
+    const distancePerRatio = (r) => -2000 * r + 2000
+
+    switch (this.level) {
+      case 0:
+        this.ratio = randomRatio(0.8, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 1: 
+        this.ratio = randomRatio(0.7, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 2:
+        this.ratio = randomRatio(0.6, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 3: 
+        this.ratio = randomRatio(0.5, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 4:
+        this.ratio = randomRatio(0.4, 0.3)
+        this.distance = distancePerRatio(this.ratio)
+        return
+    }
+  }
+
+  // planetG = [
+  //   {
+  //     planet: "Earth",
+  //     gravity: 9.807,
+  //   },
+  //   {
+  //     planet: "Saturn",
+  //     gravity: 10.44,
+  //   },
+  //   {
+  //     planet: "Neptune",
+  //     gravity: 11.15,
+  //   },
+  //   {
+  //     planet: "Jupiter",
+  //     gravity: 24.79,
+  //   },
+  //   {
+  //     planet: "Sun",
+  //     gravity: 274.0,
+  //   },
+  // ]
 }

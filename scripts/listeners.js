@@ -38,6 +38,8 @@ sight.addEventListener("mousedown", function (e) {
   // Animation control for missed target, prevents unwanted animations
   if (!targetDown) {
     sniper.ammo-- // prevents the user from waisting bullets while the duck is falling
+    
+
 
     bang.x = click[0] // Prevent user interaction while duck is falling
     bang.y = click[1]
@@ -54,6 +56,8 @@ sight.addEventListener("mousedown", function (e) {
     shot[1] < duck.y + duck.height
   ) {
     targetDown = true
+    huntCount++
+    if(sniper.ammo < 5) sniper.ammo += 2
   } else {
     // targetDown = false
   }

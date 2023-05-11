@@ -4,15 +4,17 @@
 const sight = document.getElementById("sight")
 const ctx = sight.getContext("2d")
 
-let ratio = 0.5
+let ratio = 0.4
 let click = []
 let shot = []
 let requestId 
 let gameFrames = 0
-let level = 0
 
+let level = 0
 let animeFlag = true
 let targetDown = false
+let huntCount = 0
+let duckSpawns = 0
 
 const rifles = [
   {
@@ -41,46 +43,18 @@ const rifles = [
   },
 ]
 
-const Level = [
-  {
-    planet: "Earth",
-    gravity: 9.807,
-  },
-  {
-    planet: "Saturn",
-    gravity: 10.44,
-  },
-  {
-    planet: "Neptune",
-    gravity: 11.15,
-  },
-  {
-    planet: "Jupiter",
-    gravity: 24.79,
-  },
-  {
-    planet: "Sun",
-    gravity: 274.0,
-  },
-]
-
 function clearCanvas() {
-  const clearWidth = sight.width * ratio
-  const clearHeight = sight.height * ratio
-  const clearX = sight.width / 2 - clearWidth / 2
-  const clearY = sight.height / 2 - clearHeight / 2
-  // ctx.clearRect(0, 0, sight.width, sight.height)
   ctx.clearRect(0, 0, sight.width, sight.length)
 }
 
-const printData = () => { 
+function printData() { 
   document.querySelector(
     "#wind-data"
   ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
 
   document.querySelector(
     "#target-data"
-  ).innerHTML = `Target = [${duck.x}, ${duck.y} ,${duck.distance}]`
+  ).innerHTML = `Target = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}]`
 
   document.querySelector(
     "#rifle-data"
@@ -92,20 +66,11 @@ const printData = () => {
 
   document.querySelector(
       "#frames"
-  ).innerHTML = `game frames = ${gameFrames}
-    target down = ${targetDown}`
-}
-
-function targetHitted() {
-  if (shot[0] > duck.x &&
-    shot[0] < duck.x + duck.width &&
-    shot[1] > duck.y &&
-    shot[1] < duck.y + duck.height) {
-    return true
-  } else {
-    return false
-  }
-  
+  ).innerHTML = `game frames = ${gameFrames};
+    target down = ${targetDown};
+    duck spawns = ${duckSpawns};
+    hunt count = ${huntCount};
+    world data = ${world.ratio}`
 }
 
 function duckAnimation() {
@@ -123,7 +88,7 @@ function duckAnimation() {
     if (!animeFlag && duck.animate === 0) {
       animeFlag = true
     }
-    duck.x += ratio * 10
+    duck.x += world.ratio * 10
   } else if (targetDown) {
     duck.x = duck.x
     duck.position = 8
@@ -139,24 +104,47 @@ function duckAnimation() {
     duck.draw()
     hit.draw()
 
-    if (duck.y < sight.height) {
+    if (duck.y < sight.height) { // falldown of the duck after being shot
       duck.y += 3
       hit.y += 3
-    } else { // if the target is not hit, spawns randomly
+    } else { // if the target falls down away from sight appears randomly at the left
       targetDown = false
-      duck.x = -duck.width
+      wind.randomWind()
       duck.randomSpawn()
-      duck.draw()
     }
-
-    console.log
   }
 
+  // Re-spawn duck if it exits the spawn area width
   if (duck.x > sight.width) {
     duck.randomSpawn()
     wind.randomWind()
   }
+}
 
+function ammoAnimation() {
+  switch (sniper.ammo) {
+    case 5:
+      sniper.animate = 0
+      return
+    case 4:
+      sniper.animate = 1
+      return
+    case 3:
+      sniper.animate = 2
+      return
+    case 2:
+      sniper.animate = 3
+      return
+    case 1:
+      sniper.animate = 4
+      return
+    case 0:
+      sniper.animate = 5
+      return
+    default:
+      sniper.animate = 5
+      return
+  }
 }
 
 function gameEngine() {
@@ -171,6 +159,8 @@ function gameEngine() {
   duck.draw()
   duckAnimation()
   bang.draw()
+  sniper.drawAmmo()
+  ammoAnimation()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
