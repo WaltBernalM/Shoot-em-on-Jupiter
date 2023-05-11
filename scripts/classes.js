@@ -8,7 +8,7 @@ class TargetSpawnArea {
     this.spawnY = sight.height / 2 - this.spawnH / 2
     
     this.img = new Image()
-    this.img.src = "/Images/background.jpg"
+    this.img.src = "./Images/background.jpg"
     this.img.onload = () => { this.draw() }
     
     this.backgroundW = sight.width + sight.width / (1 - this.ratio)
@@ -65,13 +65,13 @@ class Duck {
     this.animate = 0 // Animation sequence value
     this.position = 0 // select position of the sprite
     this.flyDuck = new Image()
-    this.flyDuck.src = "/Images/duckhunt.png" // 375 x 267
+    this.flyDuck.src = "./Images/duckhunt.png" // 375 x 267
     this.flyDuck.onload = () => {
       this.draw()
     }
 
     this.shotDuck = new Image()
-    this.shotDuck.src = "/Images/duckhunt.png" // 375 x 267
+    this.shotDuck.src = "./Images/duckhunt.png" // 375 x 267
   }
 
   randomSpawn() {
@@ -146,7 +146,7 @@ class Sniper {
     this.imgH = 100
     this.imgX = sight.width - this.imgW
     this.imgY = 0
-    this.img.src = "/Images/ammo-8-bit-sprite.png"
+    this.img.src = "./Images/ammo-8-bit-sprite.png"
     this.img.onload = () => {
       this.drawAmmo()
     }
@@ -257,12 +257,12 @@ class Hit {
     this.width = 20
     this.height = 20
     this.bulletHole = new Image()
-    this.bulletHole.src = '/Images/bullet-hole.png'
+    this.bulletHole.src = './Images/bullet-hole.png'
     this.bulletHole.onload = () => {
       this.draw()
     }
     this.hit = new Image()
-    this.hit.src = '/Images/shot-icon.jpg'
+    this.hit.src = './Images/shot-icon.jpg'
     this.hit.onload = () => {
       this.draw()
     }
@@ -302,7 +302,7 @@ class Bang {
     this.width = sight.width * 0.075
     this.height = sight.height * 0.15
     this.img = new Image()
-    this.img.src = '/Images/bang-icon.png'
+    this.img.src = './Images/bang-icon.png'
     this.img.onload = () => {
       this.draw()
     }
