@@ -6,7 +6,7 @@ html {
 canvas {
   border: 1px solid red;
   cursor: crosshair;
-  cursor: url("/Images/gun-pointer.png") 55 55, default;
+  cursor: url("./Images/gun-pointer.png") 55 55, default;
 }
 
 section {
