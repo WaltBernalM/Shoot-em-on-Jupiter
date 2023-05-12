@@ -1,7 +1,7 @@
 // @ts-nocheck
 class TargetSpawnArea {
-  constructor(ratio) {
-    this.ratio = ratio
+  constructor(world) {
+    this.ratio = world.ratio
     this.spawnW = sight.width //* this.ratio
     this.spawnH = sight.height * this.ratio
     this.spawnX = 0//sight.width / 2 - this.spawnW / 2
@@ -27,20 +27,42 @@ class TargetSpawnArea {
       this.backgroundW,
       this.backgroundH
     )
-    ctx.globalAlpha = 0.3
-    ctx.fillStyle = 'yellow'
+
+    
+    switch (true) {
+      case world.name === "Earth":
+        ctx.globalAlpha = 0.3
+        ctx.fillStyle = "yellow"
+        break
+      case world.name === "Saturn":
+        ctx.globalAlpha = 0.4
+        ctx.fillStyle = "yellow"
+        break
+      case world.name === "Neptune":
+        ctx.globalAlpha = 0.4
+        ctx.fillStyle = "white"
+        break
+      case world.name === "Jupiter":
+        ctx.globalAlpha = 0.5
+        ctx.fillStyle = "red"
+        break
+      case world.name === "Sun":
+        ctx.globalAlpha = 0.9
+        ctx.fillStyle = "whitesmoke"
+        break
+    }
     ctx.fillRect(0, 0, sight.width, sight.height)
     ctx.globalAlpha = 1
 
-    ctx.globalAlpha = 0.3
-    ctx.fillStyle = "black"
-    ctx.fillRect(
-      sight.width / 2 - (sight.width * this.ratio) / 2,
-      this.spawnY,
-      sight.width * this.ratio,
-      this.spawnH
-    )
-    ctx.globalAlpha = 1
+    // ctx.globalAlpha = 0.1
+    // ctx.fillStyle = "black"
+    // ctx.fillRect(
+    //   sight.width / 2 - (sight.width * this.ratio) / 2,
+    //   this.spawnY,
+    //   sight.width * this.ratio,
+    //   this.spawnH
+    // )
+    // ctx.globalAlpha = 1
   }
 }
 
@@ -253,8 +275,8 @@ class Sniper {
   }
 
   // 3D Parabolic shot engine 
-  shot(wind, Duck) {
-    const g = 9.81 // acceleration due to gravity
+  shot(wind, duck, world) {
+    let g = world.gravity //9.807 // acceleration due to gravity
     const rho = wind.rho // air density
     const Cd = wind.Cd // air drag coefficient
     const A = this.rifle.bulletFrontalArea // projectile forntal area
@@ -282,11 +304,11 @@ class Sniper {
 
     let endPos = [x, y, z] // projectile end position
 
-    const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
-    const rand = () => Math.floor(Math.random() * 0.2) * negRand()
+    // const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
+    // const rand = () => Math.floor(Math.random() * 0.2) * negRand()
 
     // Simulation loop
-    while (z < Duck.distance) {
+    while (z < duck.distance) {
       // Calculate wind variables
       const v = Math.sqrt(
         wind.xSpeed ** 2 + wind.ySpeed ** 2 + wind.zSpeed ** 2
@@ -296,9 +318,13 @@ class Sniper {
       const ayr = v === 0 ? 0 : (-Fd * vy + wind.ySpeed) / (m * v)
       const azr = v === 0 ? 0 : (-Fd * vz + wind.zSpeed) / (m * v)
 
+      // const axr = v === 0 ? 0 : (-Fd * vx + 0) / (m * v)
+      // const ayr = v === 0 ? 0 : (-Fd * vy + 0) / (m * v)
+      // const azr = v === 0 ? 0 : (-Fd * vz + 0) / (m * v)
+
       // Calculate acceleration
       ax += axr * dt
-      ay += (-ayr + g) * dt
+      ay += (-ayr + (g * 10)) * dt
       az += azr * dt
 
       // Update velocity and position
@@ -320,14 +346,7 @@ class Sniper {
       if (y >= sight.height || x >= sight.width) break
     }
 
-    if (
-      x.toFixed() === Duck.x.toFixed() &&
-      y.toFixed() === Duck.y.toFixed() &&
-      z.toFixed() === Duck.distance.toFixed()
-    ) {
-      console.log("Duck down!")
-    }
-
+    
     return [x, y, z, t]
   }
 }
@@ -407,7 +426,8 @@ class World {
     this.distance = 0
     this.ratio = 0
     this.distance = 0
-    // this.gravity = 0
+    this.name = 'Earth'
+    this.gravity = 9.8
   }
 
   createWorld() {
@@ -418,58 +438,294 @@ class World {
       case 0:
         this.ratio = randomRatio(0.75, 0.8)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
         return
       case 1:
-        this.ratio = randomRatio(0.7, 0.75)
+        this.ratio = randomRatio(0.75, 0.8)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
         return
       case 2:
-        this.ratio = randomRatio(0.65, 0.7)
+        this.ratio = randomRatio(0.75, 0.8)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
         return
       case 3:
-        this.ratio = randomRatio(0.6, 0.65)
+        this.ratio = randomRatio(0.7, 0.75)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
         return
       case 4:
-        this.ratio = randomRatio(0.55, 0.6)
+        this.ratio = randomRatio(0.7, 0.75)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
         return
       case 5:
-        this.ratio = randomRatio(0.4, 0.55)
+        this.ratio = randomRatio(0.7, 0.75)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
         return
       case 6:
-        this.ratio = randomRatio(0.35, 0.4)
+        this.ratio = randomRatio(0.65, 0.7)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
         return
       case 7:
-        this.ratio = randomRatio(0.30, 0.35)
+        this.ratio = randomRatio(0.65, 0.7)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
         return
+      case 8:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 9:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 10:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 11:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 12:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 13:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 14:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 15:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 16:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 17:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 18:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 19:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 20:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 21:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 22:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 23:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 24:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 25:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 26:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 27:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 28:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 29:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 30:
+        this.ratio = randomRatio(0.75, 0.8)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 31:
+        this.ratio = randomRatio(0.75, 0.8)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+        return
+      case 32:
+        this.ratio = randomRatio(0.7, 0.75)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 33:
+        this.ratio = randomRatio(0.7, 0.75)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 34:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 35:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 36:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 37:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 38:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 39:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 40:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 41:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 42:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 43:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 44:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 45:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 46:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 47:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
+      case 48:
+        this.ratio = randomRatio(0.35, 0.3)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 49:
+        this.ratio = randomRatio(0.35, 0.3)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Sun"
+        this.gravity = 274
     }
   }
-
-  // planetG = [
-  //   {
-  //     planet: "Earth",
-  //     gravity: 9.807,
-  //   },
-  //   {
-  //     planet: "Saturn",
-  //     gravity: 10.44,
-  //   },
-  //   {
-  //     planet: "Neptune",
-  //     gravity: 11.15,
-  //   },
-  //   {
-  //     planet: "Jupiter",
-  //     gravity: 24.79,
-  //   },
-  //   {
-  //     planet: "Sun",
-  //     gravity: 274.0,
-  //   },
-  // ]
 }

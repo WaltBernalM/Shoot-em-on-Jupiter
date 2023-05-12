@@ -2,7 +2,7 @@ const world = new World()
 // world.level = 7
 world.createWorld()
 
-let spawnArea = new TargetSpawnArea(world.ratio)
+let spawnArea = new TargetSpawnArea(world)
 
 const rifle = new SniperGun()
 const sniper = new Sniper(rifle)

@@ -62,7 +62,7 @@ function printData() {
 
   document.querySelector(
     "#sniper-data"
-  ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
+  ).innerHTML = `User click coord = [${click[0]}, ${click[1]}]; ammo = ${sniper.ammo}`
 
   document.querySelector(
       "#frames"
@@ -78,7 +78,11 @@ function printData() {
 
   ctx.font = "14px Arial"
   ctx.fillStyle = "white"
-  ctx.fillText(`Level: ${world.level + 1}`, sight.width / 2 - 25, 40)
+  ctx.fillText(
+    `Level: ${world.level + 1} 
+    ${world.name} (${world.gravity}m/s^2)`,
+    sight.width / 2 - 85,
+    40)
 }
 
 function gameOver() {
@@ -98,29 +102,30 @@ function gameOver() {
 }
 
 function levelControl() {
-    if (world.level < 7) {
-      if (sniper.ammo >= 0 && huntCount >= 3) {
-        world.level += 1
-        duckSpawns = 0
-        huntCount = 0
-        sniper.ammo = 5
+  if (world.level < 48) {
+    if (sniper.ammo >= 0 && huntCount >= 3) {
+      world.level += 1
+      duckSpawns = 0
+      huntCount = 0
+      sniper.ammo = 5
 
-        world.createWorld()
-        spawnArea = new TargetSpawnArea(world.ratio)
-        duck = new Duck(spawnArea)
-        duck.distance = world.distance
-        clearCanvas()
-        spawnArea.draw()
-        duck.randomSpawn()
-        duck.draw()
-      }
-    } else {
-      world.level = 7
+      world.createWorld()
+      spawnArea = new TargetSpawnArea(world.ratio)
+      duck = new Duck(spawnArea)
+      duck.distance = world.distance
+      duck.randomSpawn()
+      duck.draw()
     }
+  } else if (world.level >= 49){
+    world.level = 49
+    duck.randomSpawn()
+    duck.draw()
+  } 
 }
 
 function duckAnimation() {
-  if (!targetDown) {
+
+  if (!targetDown && duck.y < sight.height) {
     duck.position = 4
     if (animeFlag && gameFrames % 8 === 0) {
       duck.animate++
@@ -129,15 +134,17 @@ function duckAnimation() {
       animeFlag = false
     }
     if (!animeFlag && gameFrames % 8 === 0) {
-      duck.animate--
+      // Bug fix - Duck not visible
+      duck.animate <= 0 ? duck.animate = 0 : duck.animate--
     }
     if (!animeFlag && duck.animate === 0) {
       animeFlag = true
     }
     
     !duck.reverse ? duck.x += world.ratio * 5 : duck.x -= world.ratio * 5 // Duck x-axis movement
+  }
 
-  } else if (targetDown) {
+  if (targetDown) {
     duck.x = duck.x
     duck.position = 8
     
@@ -149,33 +156,28 @@ function duckAnimation() {
       bang.y = - 30
     }
 
-    clearCanvas()
-    duck.draw()
-    hit.draw()
-
     if (duck.y < sight.height) { // falldown of the duck after being shot
-      duck.y += 3
-      hit.y += 3
+      duck.y += (4 * world.gravity) / 10
+      hit.y += (4 * world.gravity) / 10
     } else { // if the target falls down away from sight appears randomly at the left
-      targetDown = false
       wind.randomWind()
       levelControl()
+      targetDown = false
       duck.randomSpawn()
+      duck.draw()
     }
   }
 
   // Re-spawn duck if it exits the spawn area width
-  if (duck.x > sight.width && !duck.reverse) {
-    // duck.reverse = true
+  if (
+    (duck.x > sight.width && !duck.reverse) ||
+    (duck.x + duck.width < 0 && duck.reverse)
+  ) {
     duck.randomSpawn()
-    duckSpawns++ // Condition to lose 
-    wind.randomWind()
-  } else if ((duck.x + duck.width) < 0 && duck.reverse) {
-    // duck.reverse = false
-    duck.randomSpawn()
+    duck.draw()
     duckSpawns++ // Condition to lose
     wind.randomWind()
-  }
+  } 
 }
 
 function ammoAnimation() {
@@ -231,21 +233,18 @@ function animateDistance() {
 function gameEngine() {
   gameFrames++
 
-  duckAnimation()
   clearCanvas()
   spawnArea.draw()
-  printData()
-
-  sniper.drawAmmo()
-  ammoAnimation()
   hit.draw()
   duck.draw()
-  bang.draw()
   animateDistance()
-
+  bang.draw()
+  sniper.drawAmmo()
+  ammoAnimation()
   windRose.draw(wind, spawnArea)
-
-  // gameOver()
+  printData()
+  duckAnimation()
+  gameOver()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
