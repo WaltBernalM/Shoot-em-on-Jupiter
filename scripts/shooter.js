@@ -53,7 +53,8 @@ function printData() {
 
   document.querySelector(
     "#target-data"
-  ).innerHTML = `Target = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}]`
+  ).innerHTML = `Duck = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}];
+  ${duck.reverse}`
 
   document.querySelector(
     "#rifle-data"
@@ -133,7 +134,9 @@ function duckAnimation() {
     if (!animeFlag && duck.animate === 0) {
       animeFlag = true
     }
-    duck.x += world.ratio * 5 // movement of duck
+    
+    !duck.reverse ? duck.x += world.ratio * 5 : duck.x -= world.ratio * 5 // Duck x-axis movement
+
   } else if (targetDown) {
     duck.x = duck.x
     duck.position = 8
@@ -162,9 +165,15 @@ function duckAnimation() {
   }
 
   // Re-spawn duck if it exits the spawn area width
-  if (duck.x > sight.width) {
+  if (duck.x > sight.width && !duck.reverse) {
+    // duck.reverse = true
     duck.randomSpawn()
-    duckSpawns++
+    duckSpawns++ // Condition to lose 
+    wind.randomWind()
+  } else if ((duck.x + duck.width) < 0 && duck.reverse) {
+    // duck.reverse = false
+    duck.randomSpawn()
+    duckSpawns++ // Condition to lose
     wind.randomWind()
   }
 }
@@ -236,7 +245,7 @@ function gameEngine() {
 
   windRose.draw(wind, spawnArea)
 
-  gameOver()
+  // gameOver()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)

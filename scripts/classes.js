@@ -69,48 +69,59 @@ class Duck {
     this.flyDuck.onload = () => {
       this.draw()
     }
-
     this.shotDuck = new Image()
     this.shotDuck.src = "./Images/duckhunt.png" // 375 x 267
+    this.reverse = false
   }
 
   randomSpawn() {
-    this.x = -this.width
-    this.y = Math.floor(
-      (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
-    )
+    this.reverse = Math.floor(Math.random() * 10) % 2 === 0 ? true : false
+
+    if (!this.reverse) { // Spawn tuck to fly from left to right
+      this.x = -this.width * 2
+      this.y = Math.floor(
+        Math.random() * (spawnArea.spawnH - this.height) + spawnArea.spawnY
+      )
+    } else if (this.reverse) { //
+      this.x = sight.width  + this.width
+      this.y = Math.floor(
+        Math.random() * (spawnArea.spawnH - this.height) + spawnArea.spawnY
+      )
+    }
   }
 
 
-  // Mirror Duck
-  // ctx.save();
-  // ctx.scale(-1, 1);
-  // ctx.drawImage(
-  // this.flyDuck,
-  // (this.animate * 375) / 9,
-  // (this.position * 267) / 9.2068965,
-  // 35,
-  // 35,
-  // -this.x - this.width, // Adjust x and width to match the negative scale
-  // this.y,
-  // this.width,
-  // this.height
-  // );
-  // ctx.restore();
-
   draw() {
-    ctx.globalAlpha = 1
-    ctx.drawImage(
-      this.flyDuck,
-      (this.animate * 375) / 9,
-      (this.position * 267) / 9.2068965,
-      35,
-      35,
-      this.x,
-      this.y,
-      this.width,
-      this.height
-    )
+    if (!this.reverse) { // Draw tuck to fly from left to right
+      ctx.globalAlpha = 1
+      ctx.drawImage(
+        this.flyDuck,
+        (this.animate * 375) / 9,
+        (this.position * 267) / 9.2068965,
+        35,
+        35,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      )
+    } else if (this.reverse) { // Draw tuck to fly from right to left
+      ctx.save()
+      ctx.scale(-1, 1)
+      ctx.drawImage(
+        this.flyDuck,
+        (this.animate * 375) / 9,
+        (this.position * 267) / 9.2068965,
+        35,
+        35,
+        -this.x - this.width, // Adjust x and width to match the negative scale
+        this.y,
+        this.width,
+        this.height
+      )
+      ctx.restore()
+    }
+
   }
 }
 
@@ -188,6 +199,18 @@ class WindRose {
     ctx.closePath()
     ctx.stroke()
 
+    ctx.font = "10px Arial"
+    ctx.fillStyle = "white"
+    ctx.fillText(`X`, this.x0 + 39, this.y0 - 4)
+    
+    ctx.font = "10px Arial"
+    ctx.fillText(`Y`, this.x0 - 3, this.y0 - 48)
+
+    ctx.save()
+    ctx.translate(this.x0 - 20, this.y0 - 18)
+    ctx.rotate(this.theta + 5.81)
+    ctx.fillText("Z", 0, 0)
+    ctx.restore()
   }
 }
 
