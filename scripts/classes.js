@@ -32,15 +32,15 @@ class TargetSpawnArea {
     ctx.fillRect(0, 0, sight.width, sight.height)
     ctx.globalAlpha = 1
 
-    // ctx.globalAlpha = 0.3
-    // ctx.fillStyle = "black"
-    // ctx.fillRect(
-    //   sight.width / 2 - (sight.width * this.ratio) / 2,
-    //   this.spawnY,
-    //   sight.width * this.ratio,
-    //   this.spawnH
-    // )
-    // ctx.globalAlpha = 1
+    ctx.globalAlpha = 0.3
+    ctx.fillStyle = "black"
+    ctx.fillRect(
+      sight.width / 2 - (sight.width * this.ratio) / 2,
+      this.spawnY,
+      sight.width * this.ratio,
+      this.spawnH
+    )
+    ctx.globalAlpha = 1
   }
 }
 
@@ -129,6 +129,65 @@ class Wind {
     this.xSpeed = rand()
     this.ySpeed = rand()
     this.zSpeed = rand()
+  }
+}
+
+class WindRose {
+  constructor() { 
+    this.offset = 50
+    this.x0 = sight.width - this.offset
+    this.y0 = sight.height - this.offset
+    this.theta = 0
+    this.mult = this.offset * 0.1875
+  }
+
+  draw(wind, spawnArea) {
+    this.xSpeed = wind.xSpeed
+    this.ySpeed = wind.ySpeed
+    this.zSpeed = wind.zSpeed
+
+    this.theta = Math.tanh(
+      sight.width - spawnArea.spawnH - spawnArea.spawnX,
+      sight.height - spawnArea.spawnH - spawnArea.spawnY
+    )
+
+    //Skull
+    ctx.globalAlpha = 0.5
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = 6
+    ctx.beginPath()
+    ctx.moveTo(this.x0 - this.offset * 0.93, this.y0)
+    ctx.lineTo(this.x0 + this.offset * 0.93, this.y0)
+    ctx.moveTo(this.x0, this.y0 - this.offset * 0.93)
+    ctx.lineTo(this.x0, this.y0 + this.offset * 0.93)
+    ctx.moveTo(
+      this.x0 + Math.sin(this.theta) * -(this.mult / 3) * this.mult * 1,
+      this.y0 + Math.cos(this.theta) * -(this.mult / 3) * this.mult * 1
+    )
+    ctx.lineTo(
+      this.x0 + Math.sin(this.theta) * (this.mult / 3) * this.mult * 1,
+      this.y0 + Math.cos(this.theta) * (this.mult / 3) * this.mult * 1
+    )
+    ctx.closePath()
+    ctx.stroke()
+    ctx.globalAlpha = 1
+
+    // Axis
+    ctx.strokeStyle = "white"
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(this.x0, this.y0)
+    ctx.lineTo(this.x0 + wind.xSpeed * this.mult, this.y0)
+    ctx.moveTo(this.x0, this.y0)
+    ctx.lineTo(this.x0, this.y0 + -wind.ySpeed * this.mult)
+    ctx.moveTo(this.x0, this.y0)
+    ctx.lineTo(
+      this.x0 + Math.sin(this.theta) * -this.zSpeed * this.mult * 0.66,
+      this.y0 + Math.cos(this.theta) * -this.zSpeed * this.mult * 0.66
+    )
+    ctx.closePath()
+    ctx.stroke()
+
   }
 }
 

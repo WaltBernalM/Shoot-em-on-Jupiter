@@ -234,6 +234,8 @@ function gameEngine() {
   bang.draw()
   animateDistance()
 
+  windRose.draw(wind, spawnArea)
+
   gameOver()
 
   if (requestId) {

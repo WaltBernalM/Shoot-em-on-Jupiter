@@ -16,3 +16,5 @@ wind.randomWind()
 
 const bang = new Bang(click)
 const hit = new Hit(shot)
+
+const windRose = new WindRose()
