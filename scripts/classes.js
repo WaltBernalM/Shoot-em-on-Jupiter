@@ -46,10 +46,6 @@ class TargetSpawnArea {
         ctx.globalAlpha = 0.5
         ctx.fillStyle = "red"
         break
-      case world.name === "Sun":
-        ctx.globalAlpha = 0.9
-        ctx.fillStyle = "whitesmoke"
-        break
     }
     ctx.fillRect(0, 0, sight.width, sight.height)
     ctx.globalAlpha = 1
@@ -622,110 +618,49 @@ class World {
         this.gravity = 24.79
         return
       case 31:
-        this.ratio = randomRatio(0.75, 0.8)
+        this.ratio = randomRatio(0.7, 0.75)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
         return
       case 32:
-        this.ratio = randomRatio(0.7, 0.75)
+        this.ratio = randomRatio(0.65, 0.7)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
         return
       case 33:
-        this.ratio = randomRatio(0.7, 0.75)
+        this.ratio = randomRatio(0.6, 0.65)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
+        return
       case 34:
-        this.ratio = randomRatio(0.65, 0.7)
+        this.ratio = randomRatio(0.55, 0.6)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
         return
       case 35:
-        this.ratio = randomRatio(0.65, 0.7)
+        this.ratio = randomRatio(0.5, 0.55)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
+        return
       case 36:
-        this.ratio = randomRatio(0.6, 0.65)
+        this.ratio = randomRatio(0.45, 0.5)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
         return
       case 37:
-        this.ratio = randomRatio(0.6, 0.65)
+        this.ratio = randomRatio(0.4, 0.45)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
+        return
       case 38:
-        this.ratio = randomRatio(0.55, 0.6)
+        this.ratio = randomRatio(0.35, 0.4)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
         return
       case 39:
-        this.ratio = randomRatio(0.55, 0.6)
+        this.ratio = randomRatio(0.3, 0.35)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
+        return
       case 40:
-        this.ratio = randomRatio(0.5, 0.55)
+        this.ratio = randomRatio(0.25, 0.3)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
         return
       case 41:
-        this.ratio = randomRatio(0.5, 0.55)
+        this.ratio = randomRatio(0.2, 0.25)
         this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
-      case 42:
-        this.ratio = randomRatio(0.45, 0.5)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
         return
-      case 43:
-        this.ratio = randomRatio(0.45, 0.5)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
-      case 44:
-        this.ratio = randomRatio(0.4, 0.45)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
-        return
-      case 45:
-        this.ratio = randomRatio(0.4, 0.45)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
-      case 46:
-        this.ratio = randomRatio(0.35, 0.4)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
-        return
-      case 47:
-        this.ratio = randomRatio(0.35, 0.4)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
-      case 48:
-        this.ratio = randomRatio(0.35, 0.3)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
-        return
-      case 49:
-        this.ratio = randomRatio(0.35, 0.3)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Sun"
-        this.gravity = 274
     }
   }
 }

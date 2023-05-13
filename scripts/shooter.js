@@ -102,7 +102,7 @@ function gameOver() {
 }
 
 function levelControl() {
-  if (world.level < 48) {
+  if (world.level <= 40) {
     if (sniper.ammo >= 0 && huntCount >= 3) {
       world.level += 1
       duckSpawns = 0
@@ -117,8 +117,8 @@ function levelControl() {
       duck.randomSpawn()
       duck.draw()
     }
-  } else if (world.level >= 49){
-    world.level = 49
+  } else if (world.level >= 41){
+    world.level = 41
     duck.randomSpawn()
     duck.draw()
   } 
