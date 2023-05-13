@@ -110,7 +110,8 @@ function levelControl() {
       sniper.ammo = 5
 
       world.createWorld()
-      spawnArea = new TargetSpawnArea(world.ratio)
+      spawnArea = new TargetSpawnArea(world)
+      spawnArea.draw()
       duck = new Duck(spawnArea)
       duck.distance = world.distance
       duck.randomSpawn()
@@ -136,6 +137,7 @@ function duckAnimation() {
     if (!animeFlag && gameFrames % 8 === 0) {
       // Bug fix - Duck not visible
       duck.animate <= 0 ? duck.animate = 0 : duck.animate--
+
     }
     if (!animeFlag && duck.animate === 0) {
       animeFlag = true
@@ -234,6 +236,7 @@ function gameEngine() {
   gameFrames++
 
   clearCanvas()
+  duckAnimation()
   spawnArea.draw()
   hit.draw()
   duck.draw()
@@ -243,8 +246,8 @@ function gameEngine() {
   ammoAnimation()
   windRose.draw(wind, spawnArea)
   printData()
-  duckAnimation()
-  gameOver()
+
+  // gameOver()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
