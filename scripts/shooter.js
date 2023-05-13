@@ -2,6 +2,8 @@
 // Shooting Range
 
 const sight = document.getElementById("sight")
+sight.width = window.screen.width - window.screen.width * 0.20
+sight.height = window.screen.height - window.screen.height * 0.20
 const ctx = sight.getContext("2d")
 
 let click = []
@@ -70,7 +72,9 @@ function gameOver() {
       sight.width / 2 - ctx.measureText(finalScore).width / 2,
       sight.height / 2 + 40
     )
+
     requestId = cancelAnimationFrame(requestId)
+    document.querySelector('#reset-button').style.display = ""
   }
 }
 
@@ -243,11 +247,20 @@ function gameEngine() {
 }
 
 function startGame() {
+  document.querySelector(".game-intro").style.display = "none"
+  sight.style.display = ""
+  sight.style.alignItems = 'center'
+  sight.style.justifyContent = 'center'
   if (!requestId) {
     requestId = requestAnimationFrame(gameEngine)
   }
 }
 
 window.onload = () => {
-  startGame()
+  sight.style.display = "none"
+  document.querySelector('#reset-button').style.display = "none"
+  document.getElementById("start-button").onclick = () => {
+    console.log("start-button clicked")
+    startGame()
+  }
 }

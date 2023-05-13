@@ -1,6 +1,8 @@
 body, 
 html {
   cursor: default;
+  padding: 0;
+  margin: 0;
 }
 
 canvas {
@@ -8,9 +10,92 @@ canvas {
   cursor: none;
 }
 
-section {
-  font-size: 20px; 
-  font-weight: bold; 
-  font-family: 'Courier New', 
-  Courier, monospace;
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #f2f2f2;
+  background-image: url("/Images/menu-background.jpg");
+  background-repeat: no-repeat;
+  background-size: auto;
+  background-color: black;
+
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+img {
+  width: 40px;
+}
+
+.game-intro {
+  padding: 0% 10%;
+  display: flex;
+  flex: row;
+}
+
+.game-intro p {
+  font-size: 3vh;
+  font-family: "Verdana";
+
+}
+
+h1 {
+  font-size: 6vh;
+  font-family: "Verdana";
+  color: white;
+}
+
+body div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+div p {
+  color: white;
+  position: relative;
+}
+
+button {
+  font-size: 20px;
+  background-color: #870007;
+  color: #fff;
+  padding: 0;
+  border: 0;
+  box-shadow: 0;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 6px 10px;
+}
+
+strong {
+  color: white;
+  font-family: "Verdana";
+  font-size: 2vh;
+}
+
+#start-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+}
+#start-button img {
+  position: absolute;
+  left: 5px;
+  margin-right: 5px;
+  width: 20px;
+}
+#start-button strong {
+  font-size: 3vh;
+}
+
+#reset-button {
+  position: absolute;
+  z-index: 1;
 }

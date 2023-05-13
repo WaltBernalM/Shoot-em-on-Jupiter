@@ -12,11 +12,22 @@
   <script src="scripts\listeners.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1>Shoot'em on Jupiter</h1>
-  </header>  
-  
-  <canvas id="sight" width="720" height="480"></canvas>
+  <main class="slider-thumb">
+    <div class="game-intro">
+      <img src="/Images/star.gif" id="star">
+      <h1>Shoot'em on Jupiter</h1>
+      <button id="start-button">
+        <img src="/Images/walking-duck.gif">
+        <strong>Start</strong>
+      </button>
+      <p>Use the mouse button (any) to try hunt the duck</p>
 
+      <strong>Don't be mad if you're that bad</strong>
+    </div>
+    
+    <canvas id="sight" width="667px" height="375px"></canvas>
+
+    <button id="reset-button"><strong>Retry</strong></button>
+  </main>
 </body>
 </html>
