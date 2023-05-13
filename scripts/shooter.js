@@ -78,12 +78,22 @@ function gameOver() {
     ctx.globalAlpha = 0.8
     ctx.fillRect(0, 0, sight.width, sight.height)
 
+    const loseGame = 'Game Over'
     ctx.font = "80px Arial"
     ctx.fillStyle = "white"
-    ctx.fillText('Game Over', sight.width / 2 - 200, sight.height / 2)
+    ctx.fillText(
+      loseGame,
+      sight.width / 2 - ctx.measureText(loseGame).width / 2,
+      sight.height / 2
+    )
 
+    const finalScore = `Final score: ${score}`
     ctx.font = "30px Arial"
-    ctx.fillText(`Final score: ${score}`, sight.width / 2 - 90, sight.height / 2 + 40)
+    ctx.fillText(
+      finalScore,
+      sight.width / 2 - ctx.measureText(loseGame).width / 2,
+      sight.height / 2 + 40
+    )
     requestId = cancelAnimationFrame(requestId)
   }
 }
@@ -126,7 +136,6 @@ function levelControl() {
 }
 
 function duckAnimation() {
-
   if (!targetDown && duck.y < sight.height) {
     duck.position = 4
     if (animeFlag && gameFrames % 8 === 0) {
@@ -250,7 +259,7 @@ function gameEngine() {
   windRose.draw(wind, spawnArea)
   printData()
 
-  // gameOver()
+  gameOver()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
