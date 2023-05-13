@@ -111,7 +111,7 @@ class SniperGun {
 class Duck {
   constructor(spawnArea) {
     this.distance = 0 // m, distance to the Duck from the sniper position (z axis)
-    this.height = spawnArea.spawnH / 3
+    this.height = spawnArea.spawnH / 4
     this.width = spawnArea.spawnW / (8 / world.ratio)
     this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the Duck
     this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the Duck
