@@ -1,5 +1,5 @@
 const world = new World()
-world.level = 29
+// world.level = 20
 world.createWorld()
 
 let spawnArea = new TargetSpawnArea(world)
@@ -18,3 +18,5 @@ const bang = new Bang(click)
 const hit = new Hit(shot)
 
 const windRose = new WindRose()
+
+const gunSight = new Sight()

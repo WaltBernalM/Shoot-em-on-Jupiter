@@ -87,8 +87,6 @@ class Duck {
     this.flyDuck.onload = () => {
       this.draw()
     }
-    this.shotDuck = new Image()
-    this.shotDuck.src = "./Images/duckhunt.png" // 375 x 267
     this.reverse = false
   }
 
@@ -662,5 +660,72 @@ class World {
         this.distance = distancePerRatio(this.ratio)
         return
     }
+  }
+}
+
+class Sight {
+  constructor() {
+    this.rad = 40
+    this.lineWidth = 5
+  }
+
+  draw() {
+    ctx.globalAlpha = 0.5
+
+    ctx.beginPath()
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = this.lineWidth / 2
+    ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = this.lineWidth / 3
+    ctx.arc(pointer[0], pointer[1], this.rad - 3, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.arc(pointer[0], pointer[1], this.rad + 3, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = this.lineWidth + 4
+    ctx.moveTo(pointer[0], pointer[1] + 29)
+    ctx.lineTo(pointer[0], pointer[1] + 51)
+    ctx.moveTo(pointer[0], pointer[1] - 29)
+    ctx.lineTo(pointer[0], pointer[1] - 51)
+    ctx.moveTo(pointer[0] + 29, pointer[1])
+    ctx.lineTo(pointer[0] + 51, pointer[1])
+    ctx.moveTo(pointer[0] - 29, pointer[1])
+    ctx.lineTo(pointer[0] - 51, pointer[1])
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.fillStyle = "red"
+    ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.fill()
+
+    ctx.beginPath()
+    ctx.strokeStyle = "red"
+    ctx.lineWidth = this.lineWidth
+    ctx.arc(pointer[0], pointer[1], this.rad, 0, Math.PI * 2)
+    ctx.moveTo(pointer[0], pointer[1] + 30)
+    ctx.lineTo(pointer[0], pointer[1] + 50)
+    ctx.moveTo(pointer[0], pointer[1] - 30)
+    ctx.lineTo(pointer[0], pointer[1] - 50)
+    ctx.moveTo(pointer[0] + 30, pointer[1])
+    ctx.lineTo(pointer[0] + 50, pointer[1])
+    ctx.moveTo(pointer[0] - 30, pointer[1])
+    ctx.lineTo(pointer[0] - 50, pointer[1])
+    ctx.closePath()
+    ctx.stroke()
+    
+    ctx.globalAlpha = 1
   }
 }

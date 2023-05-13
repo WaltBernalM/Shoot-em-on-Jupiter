@@ -1,5 +1,12 @@
 // @ts-nocheck
 
+sight.addEventListener("mousemove", function (e) {
+  var rect = sight.getBoundingClientRect()
+  var x = e.clientX - rect.left
+  var y = e.clientY - rect.top
+  pointer = [x, y]
+})
+
 // Event listener to get the mouse position
 sight.addEventListener("mousedown", function (e) {
   const getCursorPosition = (canvas, event) => {
@@ -74,3 +81,4 @@ sight.addEventListener("mousedown", function (e) {
     3
   )}s`
 })
+

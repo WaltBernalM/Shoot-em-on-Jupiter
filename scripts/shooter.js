@@ -6,6 +6,8 @@ const ctx = sight.getContext("2d")
 
 let click = []
 let shot = []
+let pointer = [0, 0]
+
 let requestId 
 let gameFrames = 0
 
@@ -242,12 +244,17 @@ function gameEngine() {
   duck.draw()
   animateDistance()
   bang.draw()
+
+  gunSight.draw()
   sniper.drawAmmo()
   ammoAnimation()
   windRose.draw(wind, spawnArea)
   printData()
 
   // gameOver()
+  
+
+  console.log(pointer)
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
