@@ -6,6 +6,8 @@ const ctx = sight.getContext("2d")
 
 let click = []
 let shot = []
+let pointer = [0, 0]
+
 let requestId 
 let gameFrames = 0
 
@@ -53,7 +55,8 @@ function printData() {
 
   document.querySelector(
     "#target-data"
-  ).innerHTML = `Target = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}]`
+  ).innerHTML = `Duck = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}];
+  ${duck.reverse}`
 
   document.querySelector(
     "#rifle-data"
@@ -101,7 +104,7 @@ function gameOver() {
 }
 
 function levelControl() {
-  if (world.level < 48) {
+  if (world.level <= 40) {
     if (sniper.ammo >= 0 && huntCount >= 3) {
       world.level += 1
       duckSpawns = 0
@@ -109,14 +112,15 @@ function levelControl() {
       sniper.ammo = 5
 
       world.createWorld()
-      spawnArea = new TargetSpawnArea(world.ratio)
+      spawnArea = new TargetSpawnArea(world)
+      spawnArea.draw()
       duck = new Duck(spawnArea)
       duck.distance = world.distance
       duck.randomSpawn()
       duck.draw()
     }
-  } else if (world.level >= 49){
-    world.level = 49
+  } else if (world.level >= 41){
+    world.level = 41
     duck.randomSpawn()
     duck.draw()
   } 
@@ -135,20 +139,16 @@ function duckAnimation() {
     if (!animeFlag && gameFrames % 8 === 0) {
       // Bug fix - Duck not visible
       duck.animate <= 0 ? duck.animate = 0 : duck.animate--
+
     }
     if (!animeFlag && duck.animate === 0) {
       animeFlag = true
     }
-<<<<<<< Updated upstream
-    duck.x += world.ratio * 5 // movement of duck
-  } else if (targetDown) {
-=======
     
     !duck.reverse ? duck.x += world.ratio * 5 : duck.x -= world.ratio * 5 // Duck x-axis movement
   }
 
   if (targetDown) {
->>>>>>> Stashed changes
     duck.x = duck.x
     duck.position = 8
     
@@ -173,11 +173,6 @@ function duckAnimation() {
   }
 
   // Re-spawn duck if it exits the spawn area width
-<<<<<<< Updated upstream
-  if (duck.x > sight.width) {
-    duck.randomSpawn()
-    duckSpawns++
-=======
   if (
     (duck.x > sight.width && !duck.reverse) ||
     (duck.x + duck.width < 0 && duck.reverse)
@@ -185,7 +180,6 @@ function duckAnimation() {
     duck.randomSpawn()
     duck.draw()
     duckSpawns++ // Condition to lose
->>>>>>> Stashed changes
     wind.randomWind()
   } 
 }
@@ -244,21 +238,23 @@ function gameEngine() {
   gameFrames++
 
   clearCanvas()
+  duckAnimation()
   spawnArea.draw()
   hit.draw()
   duck.draw()
   animateDistance()
-<<<<<<< Updated upstream
-
-=======
   bang.draw()
+
+  gunSight.draw()
   sniper.drawAmmo()
   ammoAnimation()
   windRose.draw(wind, spawnArea)
   printData()
-  duckAnimation()
->>>>>>> Stashed changes
-  gameOver()
+
+  // gameOver()
+  
+
+  console.log(pointer)
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
