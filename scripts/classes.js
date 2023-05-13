@@ -64,12 +64,54 @@ class TargetSpawnArea {
 
 class SniperGun {
   constructor() {
-    this.name = "OTs-03 Dragunov SVU"
-    this.range = 1300 // maximum range or rifle
-    this.bulletSpeed = 800 // m/s
-    this.bulletCaliber = 311 // inches
-    this.bulletFrontalArea = 0.000048967
-    this.bulletMass = 0.00972 // kg
+    // this.name //"Barret M82"
+    // this.range //1300 // maximum range or rifle
+    // this.bulletSpeed //853 // m/s
+    // this.bulletCaliber //"50 BMG"
+    // this.bulletFrontalArea //0.000129
+    // this.bulletMass //0.042 // kg
+
+    this.arsenal = [
+      {
+        name: "SIG SSG 3000",
+        range: 900,
+        bulletSpeed: 800,
+        bulletCaliber: "7.62x51mm",
+        bulletFrontalArea: 0.000048,
+        bulletMass: 0.0098,
+      },
+      {
+        name: "OTs-03 Dragunov SVU",
+        range: 1200, // maximum range or rifle
+        bulletSpeed: 830, // m/s
+        bulletCaliber: "7.62x51mm",
+        bulletFrontalArea: 0.000048,
+        bulletMass: 0.0098, // kg
+      },
+      {
+        name: "Barrett M82",
+        range: 1800,
+        bulletSpeed: 853,
+        bulletCaliber: "50 BMG",
+        bulletFrontalArea: 0.000129,
+        bulletMass: 0.042,
+      },
+    ]
+  }
+
+  switchRifle(pos) {
+    pos < 0
+      ? pos = 0
+      : pos > 2
+        ? pos = 2
+        : void (0)
+    
+    this.name = this.arsenal[pos].name
+    this.range = this.arsenal[pos].range
+    this.bulletSpeed = this.arsenal[pos].bulletSpeed
+    this.bulletCaliber = this.arsenal[pos].bulletCaliber
+    this.bulletFrontalArea = this.arsenal[pos].bulletFrontalArea
+    this.bulletMass = this.arsenal[pos].bulletMass
   }
 }
 
@@ -231,11 +273,11 @@ class WindRose {
 }
 
 class Sniper {
-  constructor(rifle) {
+  constructor(sniperGun) {
     this.x = 0 // m, position in x
     this.y = 0 // m, position in y
     this.z = 0
-    this.rifle = rifle
+    this.rifle = sniperGun
     this.shotAngle = 90
     this.ammo = 5
     
@@ -404,6 +446,7 @@ class Bang {
   }
 
   draw() {
+    ctx.globalAlpha = 0.4
     ctx.drawImage(
       this.img,
       this.x - this.width / 2,
@@ -411,6 +454,7 @@ class Bang {
       this.width,
       this.height
     )
+    ctx.globalAlpha = 1
   }
 }
 
@@ -670,17 +714,38 @@ class Sight {
   }
 
   draw() {
+
+    const translateShotPos = (cursorPos) => {
+      const x =
+        cursorPos[0] * world.ratio + (sight.width * (1 - world.ratio)) / 2
+      const y =
+        cursorPos[1] * world.ratio + (sight.height * (1 - world.ratio)) / 2
+      // const z = cursorPos[2]
+      const shotPos = [x, y]
+      return shotPos
+    }
+
+    const laser = translateShotPos(pointer)
+
+    
+    ctx.globalAlpha = 0.5
+    ctx.beginPath()
+    ctx.fillStyle = "red"
+    ctx.arc(laser[0], laser[1], this.rad / 8, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.fill()
+
     ctx.globalAlpha = 0.5
 
     ctx.beginPath()
-    ctx.strokeStyle = "black"
+    ctx.strokeStyle = "white"
     ctx.lineWidth = this.lineWidth / 2
     ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
     ctx.closePath()
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = "black"
+    // ctx.strokeStyle = "white"
     ctx.lineWidth = this.lineWidth / 3
     ctx.arc(pointer[0], pointer[1], this.rad - 3, 0, Math.PI * 2)
     ctx.closePath()
@@ -692,7 +757,7 @@ class Sight {
     ctx.stroke()
 
     ctx.beginPath()
-    ctx.strokeStyle = "black"
+    // ctx.strokeStyle = "black"
     ctx.lineWidth = this.lineWidth + 4
     ctx.moveTo(pointer[0], pointer[1] + 29)
     ctx.lineTo(pointer[0], pointer[1] + 51)

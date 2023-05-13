@@ -1,10 +1,12 @@
 const world = new World()
-// world.level = 20
+// world.level = 39
 world.createWorld()
 
 let spawnArea = new TargetSpawnArea(world)
 
 const rifle = new SniperGun()
+rifle.switchRifle(0)
+
 const sniper = new Sniper(rifle)
 
 let duck = new Duck(spawnArea)

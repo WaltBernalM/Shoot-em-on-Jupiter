@@ -6,7 +6,7 @@ const ctx = sight.getContext("2d")
 
 let click = []
 let shot = []
-let pointer = [0, 0]
+let pointer = []
 
 let requestId 
 let gameFrames = 0
@@ -17,74 +17,59 @@ let huntCount = 0
 let duckSpawns = 0
 let score = 0
 
-const rifles = [
-  {
-    name: "SIG SSG 3000",
-    range: 900,
-    bulletSpeed: 800,
-    bulletCaliber: "7.62x51mm",
-    bulletFrontalArea: 0.000048,
-    buletMass: 0.0098,
-  },
-  {
-    name: "OTs-03 Dragunov SVU",
-    range: 1200, // maximum range or rifle
-    bulletSpeed: 830, // m/s
-    bulletCaliber: "7.62x51mm",
-    bulletFrontalArea: 0.000048,
-    bulletMass: 0.0098, // kg
-  },
-  {
-    name: "Barrett M82",
-    range: 1800,
-    bulletSpeed: 853,
-    bulletCaliber: "50 BMG",
-    bulletFrontalArea: 0.000129,
-    buletMass: 0.042,
-  },
-]
-
 function clearCanvas() {
   ctx.clearRect(0, 0, sight.width, sight.length)
 }
 
 function printData() { 
-  document.querySelector(
-    "#wind-data"
-  ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
+  // document.querySelector(
+  //   "#wind-data"
+  // ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
 
-  document.querySelector(
-    "#target-data"
-  ).innerHTML = `Duck = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}];
-  ${duck.reverse}`
+  // document.querySelector(
+  //   "#target-data"
+  // ).innerHTML = `Duck = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}];
+  // ${duck.reverse}`
 
-  document.querySelector(
-    "#rifle-data"
-  ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
+  // document.querySelector(
+  //   "#rifle-data"
+  // ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
 
-  document.querySelector(
-    "#sniper-data"
-  ).innerHTML = `User click coord = [${click[0]}, ${click[1]}]; ammo = ${sniper.ammo}`
+  // document.querySelector(
+  //   "#sniper-data"
+  // ).innerHTML = `User click coord = [${click[0]}, ${click[1]}]; ammo = ${sniper.ammo}`
 
-  document.querySelector(
-      "#frames"
-  ).innerHTML = `game frames = ${gameFrames};
-    target down = ${targetDown};
-    duck spawns = ${duckSpawns};
-    hunt count = ${huntCount};
-    world ratio = ${world.ratio.toFixed(2)}; level = ${world.level}`
-  
-  ctx.font = "20px Arial"
-  ctx.fillStyle = "white"
-  ctx.fillText(`Score: ${score}`, sight.width / 2 - 40, 20)
+  // document.querySelector(
+  //     "#frames"
+  // ).innerHTML = `game frames = ${gameFrames};
+  //   target down = ${targetDown};
+  //   duck spawns = ${duckSpawns};
+  //   hunt count = ${huntCount};
+  //   world ratio = ${world.ratio.toFixed(2)}; level = ${world.level}`
 
-  ctx.font = "14px Arial"
+  const scoreInfo = `Score: ${score}`
+  ctx.font = "30px Arial"
   ctx.fillStyle = "white"
   ctx.fillText(
-    `Level: ${world.level + 1} 
-    ${world.name} (${world.gravity}m/s^2)`,
-    sight.width / 2 - 85,
-    40)
+    scoreInfo,
+    (sight.width / 2) - (ctx.measureText(scoreInfo).width / 2),
+    28
+  )
+
+  const levelInfo = `Level: ${world.level + 1} 
+  ${world.name} (${world.gravity}m/s^2)`
+  ctx.font = "16px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(
+    levelInfo,
+    sight.width / 2 - ctx.measureText(levelInfo).width / 2,
+    50
+  )
+  
+  const rifleInfo = `${sniper.rifle.name}: ${sniper.rifle.bulletCaliber}`
+  ctx.font = "16px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(rifleInfo, 0, 16)
 }
 
 function gameOver() {
@@ -109,11 +94,25 @@ function levelControl() {
       world.level += 1
       duckSpawns = 0
       huntCount = 0
+
+      switch (true) {
+        case world.level < 15:
+          rifle.switchRifle(0)
+          break
+        case world.level < 30:
+          rifle.switchRifle(1)
+          break
+        default:
+          rifle.switchRifle(2)
+          break
+      }
+
       sniper.ammo = 5
 
       world.createWorld()
       spawnArea = new TargetSpawnArea(world)
       spawnArea.draw()
+      
       duck = new Duck(spawnArea)
       duck.distance = world.distance
       duck.randomSpawn()
@@ -252,8 +251,6 @@ function gameEngine() {
   printData()
 
   // gameOver()
-  
-  console.log(pointer)
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
