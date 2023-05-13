@@ -28,8 +28,6 @@ sight.addEventListener("mousedown", function (e) {
   sniper.x = click[0]
   sniper.y = click[1]
 
-  printData()
-
   const tShot = translateShotPos(click)
   sniper.x = Number(tShot[0].toFixed(2))
   sniper.y = Number(tShot[1].toFixed(2))
@@ -38,17 +36,12 @@ sight.addEventListener("mousedown", function (e) {
     "#sniper-data-trans"
   ).innerHTML = `Ideal shot = [${sniper.x}, ${sniper.y}]`
 
-
   shot = sniper.shot(wind, duck, world) // runs the physics logic to  get the shot position
   
-
   // Animation control for missed target, prevents unwanted animations
   if (!targetDown) {
     
     if (sniper.ammo > 0)sniper.ammo-- // prevents the user from waisting bullets while the duck is falling
-    
-
-
     bang.x = click[0] // Prevent user interaction while duck is falling
     bang.y = click[1]
 

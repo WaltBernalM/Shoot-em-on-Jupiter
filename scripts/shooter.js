@@ -253,7 +253,6 @@ function gameEngine() {
 
   // gameOver()
   
-
   console.log(pointer)
 
   if (requestId) {
