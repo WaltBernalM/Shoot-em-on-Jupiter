@@ -6,6 +6,8 @@ const ctx = sight.getContext("2d")
 
 let click = []
 let shot = []
+let pointer = []
+
 let requestId 
 let gameFrames = 0
 
@@ -15,69 +17,59 @@ let huntCount = 0
 let duckSpawns = 0
 let score = 0
 
-const rifles = [
-  {
-    name: "SIG SSG 3000",
-    range: 900,
-    bulletSpeed: 800,
-    bulletCaliber: "7.62x51mm",
-    bulletFrontalArea: 0.000048,
-    buletMass: 0.0098,
-  },
-  {
-    name: "OTs-03 Dragunov SVU",
-    range: 1200, // maximum range or rifle
-    bulletSpeed: 830, // m/s
-    bulletCaliber: "7.62x51mm",
-    bulletFrontalArea: 0.000048,
-    bulletMass: 0.0098, // kg
-  },
-  {
-    name: "Barrett M82",
-    range: 1800,
-    bulletSpeed: 853,
-    bulletCaliber: "50 BMG",
-    bulletFrontalArea: 0.000129,
-    buletMass: 0.042,
-  },
-]
-
 function clearCanvas() {
   ctx.clearRect(0, 0, sight.width, sight.length)
 }
 
 function printData() { 
-  document.querySelector(
-    "#wind-data"
-  ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
+  // document.querySelector(
+  //   "#wind-data"
+  // ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
 
-  document.querySelector(
-    "#target-data"
-  ).innerHTML = `Target = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}]`
+  // document.querySelector(
+  //   "#target-data"
+  // ).innerHTML = `Duck = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}];
+  // ${duck.reverse}`
 
-  document.querySelector(
-    "#rifle-data"
-  ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
+  // document.querySelector(
+  //   "#rifle-data"
+  // ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
 
-  document.querySelector(
-    "#sniper-data"
-  ).innerHTML = `User click coord = [${sniper.x}, ${sniper.y}]; ammo = ${sniper.ammo}`
+  // document.querySelector(
+  //   "#sniper-data"
+  // ).innerHTML = `User click coord = [${click[0]}, ${click[1]}]; ammo = ${sniper.ammo}`
 
-  document.querySelector(
-      "#frames"
-  ).innerHTML = `game frames = ${gameFrames};
-    target down = ${targetDown};
-    duck spawns = ${duckSpawns};
-    hunt count = ${huntCount};
-    world ratio = ${world.ratio.toFixed(2)}; level = ${world.level}`
+  // document.querySelector(
+  //     "#frames"
+  // ).innerHTML = `game frames = ${gameFrames};
+  //   target down = ${targetDown};
+  //   duck spawns = ${duckSpawns};
+  //   hunt count = ${huntCount};
+  //   world ratio = ${world.ratio.toFixed(2)}; level = ${world.level}`
+
+  const scoreInfo = `Score: ${score}`
+  ctx.font = "30px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(
+    scoreInfo,
+    (sight.width / 2) - (ctx.measureText(scoreInfo).width / 2),
+    28
+  )
+
+  const levelInfo = `Level: ${world.level + 1} 
+  ${world.name} (${world.gravity}m/s^2)`
+  ctx.font = "16px Arial"
+  ctx.fillStyle = "white"
+  ctx.fillText(
+    levelInfo,
+    sight.width / 2 - ctx.measureText(levelInfo).width / 2,
+    50
+  )
   
-  ctx.font = "20px Arial"
+  const rifleInfo = `${sniper.rifle.name}: ${sniper.rifle.bulletCaliber}`
+  ctx.font = "16px Arial"
   ctx.fillStyle = "white"
-  ctx.fillText(`Score: ${score}`, sight.width / 2 - 40, 20)
-
-  ctx.font = "14px Arial"
-  ctx.fillStyle = "white"
-  ctx.fillText(`Level: ${world.level + 1}`, sight.width / 2 - 25, 40)
+  ctx.fillText(rifleInfo, 0, 16)
 }
 
 function gameOver() {
@@ -86,40 +78,65 @@ function gameOver() {
     ctx.globalAlpha = 0.8
     ctx.fillRect(0, 0, sight.width, sight.height)
 
+    const loseGame = 'Game Over'
     ctx.font = "80px Arial"
     ctx.fillStyle = "white"
-    ctx.fillText('Game Over', sight.width / 2 - 200, sight.height / 2)
+    ctx.fillText(
+      loseGame,
+      sight.width / 2 - ctx.measureText(loseGame).width / 2,
+      sight.height / 2
+    )
 
+    const finalScore = `Final score: ${score}`
     ctx.font = "30px Arial"
-    ctx.fillText(`Final score: ${score}`, sight.width / 2 - 90, sight.height / 2 + 40)
+    ctx.fillText(
+      finalScore,
+      sight.width / 2 - ctx.measureText(loseGame).width / 2,
+      sight.height / 2 + 40
+    )
     requestId = cancelAnimationFrame(requestId)
   }
 }
 
 function levelControl() {
-    if (world.level < 7) {
-      if (sniper.ammo >= 0 && huntCount >= 3) {
-        world.level += 1
-        duckSpawns = 0
-        huntCount = 0
-        sniper.ammo = 5
+  if (world.level <= 40) {
+    if (sniper.ammo >= 0 && huntCount >= 3) {
+      world.level += 1
+      duckSpawns = 0
+      huntCount = 0
 
-        world.createWorld()
-        spawnArea = new TargetSpawnArea(world.ratio)
-        duck = new Duck(spawnArea)
-        duck.distance = world.distance
-        clearCanvas()
-        spawnArea.draw()
-        duck.randomSpawn()
-        duck.draw()
+      switch (true) {
+        case world.level < 15:
+          rifle.switchRifle(0)
+          break
+        case world.level < 30:
+          rifle.switchRifle(1)
+          break
+        default:
+          rifle.switchRifle(2)
+          break
       }
-    } else {
-      world.level = 7
+
+      sniper.ammo = 5
+
+      world.createWorld()
+      spawnArea = new TargetSpawnArea(world)
+      spawnArea.draw()
+      
+      duck = new Duck(spawnArea)
+      duck.distance = world.distance
+      duck.randomSpawn()
+      duck.draw()
     }
+  } else if (world.level >= 41){
+    world.level = 41
+    duck.randomSpawn()
+    duck.draw()
+  } 
 }
 
 function duckAnimation() {
-  if (!targetDown) {
+  if (!targetDown && duck.y < sight.height) {
     duck.position = 4
     if (animeFlag && gameFrames % 8 === 0) {
       duck.animate++
@@ -128,13 +145,18 @@ function duckAnimation() {
       animeFlag = false
     }
     if (!animeFlag && gameFrames % 8 === 0) {
-      duck.animate--
+      // Bug fix - Duck not visible
+      duck.animate <= 0 ? duck.animate = 0 : duck.animate--
+
     }
     if (!animeFlag && duck.animate === 0) {
       animeFlag = true
     }
-    duck.x += world.ratio * 5 // movement of duck
-  } else if (targetDown) {
+    
+    !duck.reverse ? duck.x += world.ratio * 5 : duck.x -= world.ratio * 5 // Duck x-axis movement
+  }
+
+  if (targetDown) {
     duck.x = duck.x
     duck.position = 8
     
@@ -146,27 +168,28 @@ function duckAnimation() {
       bang.y = - 30
     }
 
-    clearCanvas()
-    duck.draw()
-    hit.draw()
-
     if (duck.y < sight.height) { // falldown of the duck after being shot
-      duck.y += 3
-      hit.y += 3
+      duck.y += (4 * world.gravity) / 10
+      hit.y += (4 * world.gravity) / 10
     } else { // if the target falls down away from sight appears randomly at the left
-      targetDown = false
       wind.randomWind()
       levelControl()
+      targetDown = false
       duck.randomSpawn()
+      duck.draw()
     }
   }
 
   // Re-spawn duck if it exits the spawn area width
-  if (duck.x > sight.width) {
+  if (
+    (duck.x > sight.width && !duck.reverse) ||
+    (duck.x + duck.width < 0 && duck.reverse)
+  ) {
     duck.randomSpawn()
-    duckSpawns++
+    duck.draw()
+    duckSpawns++ // Condition to lose
     wind.randomWind()
-  }
+  } 
 }
 
 function ammoAnimation() {
@@ -222,17 +245,19 @@ function animateDistance() {
 function gameEngine() {
   gameFrames++
 
-  duckAnimation()
   clearCanvas()
+  duckAnimation()
   spawnArea.draw()
-  printData()
-
-  sniper.drawAmmo()
-  ammoAnimation()
   hit.draw()
   duck.draw()
-  bang.draw()
   animateDistance()
+  bang.draw()
+
+  gunSight.draw()
+  sniper.drawAmmo()
+  ammoAnimation()
+  windRose.draw(wind, spawnArea)
+  printData()
 
   gameOver()
 

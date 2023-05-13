@@ -1,7 +1,7 @@
 // @ts-nocheck
 class TargetSpawnArea {
-  constructor(ratio) {
-    this.ratio = ratio
+  constructor(world) {
+    this.ratio = world.ratio
     this.spawnW = sight.width //* this.ratio
     this.spawnH = sight.height * this.ratio
     this.spawnX = 0//sight.width / 2 - this.spawnW / 2
@@ -27,12 +27,30 @@ class TargetSpawnArea {
       this.backgroundW,
       this.backgroundH
     )
-    ctx.globalAlpha = 0.3
-    ctx.fillStyle = 'yellow'
+
+    
+    switch (true) {
+      case world.name === "Earth":
+        ctx.globalAlpha = 0.3
+        ctx.fillStyle = "yellow"
+        break
+      case world.name === "Saturn":
+        ctx.globalAlpha = 0.4
+        ctx.fillStyle = "yellow"
+        break
+      case world.name === "Neptune":
+        ctx.globalAlpha = 0.4
+        ctx.fillStyle = "white"
+        break
+      case world.name === "Jupiter":
+        ctx.globalAlpha = 0.5
+        ctx.fillStyle = "red"
+        break
+    }
     ctx.fillRect(0, 0, sight.width, sight.height)
     ctx.globalAlpha = 1
 
-    // ctx.globalAlpha = 0.3
+    // ctx.globalAlpha = 0.1
     // ctx.fillStyle = "black"
     // ctx.fillRect(
     //   sight.width / 2 - (sight.width * this.ratio) / 2,
@@ -46,12 +64,54 @@ class TargetSpawnArea {
 
 class SniperGun {
   constructor() {
-    this.name = "OTs-03 Dragunov SVU"
-    this.range = 1300 // maximum range or rifle
-    this.bulletSpeed = 800 // m/s
-    this.bulletCaliber = 311 // inches
-    this.bulletFrontalArea = 0.000048967
-    this.bulletMass = 0.00972 // kg
+    // this.name //"Barret M82"
+    // this.range //1300 // maximum range or rifle
+    // this.bulletSpeed //853 // m/s
+    // this.bulletCaliber //"50 BMG"
+    // this.bulletFrontalArea //0.000129
+    // this.bulletMass //0.042 // kg
+
+    this.arsenal = [
+      {
+        name: "SIG SSG 3000",
+        range: 900,
+        bulletSpeed: 800,
+        bulletCaliber: "7.62x51mm",
+        bulletFrontalArea: 0.000048,
+        bulletMass: 0.0098,
+      },
+      {
+        name: "OTs-03 Dragunov SVU",
+        range: 1200, // maximum range or rifle
+        bulletSpeed: 830, // m/s
+        bulletCaliber: "7.62x51mm",
+        bulletFrontalArea: 0.000048,
+        bulletMass: 0.0098, // kg
+      },
+      {
+        name: "Barrett M82",
+        range: 1800,
+        bulletSpeed: 853,
+        bulletCaliber: "50 BMG",
+        bulletFrontalArea: 0.000129,
+        bulletMass: 0.042,
+      },
+    ]
+  }
+
+  switchRifle(pos) {
+    pos < 0
+      ? pos = 0
+      : pos > 2
+        ? pos = 2
+        : void (0)
+    
+    this.name = this.arsenal[pos].name
+    this.range = this.arsenal[pos].range
+    this.bulletSpeed = this.arsenal[pos].bulletSpeed
+    this.bulletCaliber = this.arsenal[pos].bulletCaliber
+    this.bulletFrontalArea = this.arsenal[pos].bulletFrontalArea
+    this.bulletMass = this.arsenal[pos].bulletMass
   }
 }
 
@@ -69,48 +129,57 @@ class Duck {
     this.flyDuck.onload = () => {
       this.draw()
     }
-
-    this.shotDuck = new Image()
-    this.shotDuck.src = "./Images/duckhunt.png" // 375 x 267
+    this.reverse = false
   }
 
   randomSpawn() {
-    this.x = -this.width
-    this.y = Math.floor(
-      (Math.random() * (spawnArea.spawnH - this.height)) + (spawnArea.spawnY)
-    )
+    this.reverse = Math.floor(Math.random() * 10) % 2 === 0 ? true : false
+
+    if (!this.reverse) { // Spawn tuck to fly from left to right
+      this.x = -this.width * 2
+      this.y = Math.floor(
+        Math.random() * (spawnArea.spawnH - this.height) + spawnArea.spawnY
+      )
+    } else if (this.reverse) { //
+      this.x = sight.width  + this.width
+      this.y = Math.floor(
+        Math.random() * (spawnArea.spawnH - this.height) + spawnArea.spawnY
+      )
+    }
   }
 
 
-  // Mirror Duck
-  // ctx.save();
-  // ctx.scale(-1, 1);
-  // ctx.drawImage(
-  // this.flyDuck,
-  // (this.animate * 375) / 9,
-  // (this.position * 267) / 9.2068965,
-  // 35,
-  // 35,
-  // -this.x - this.width, // Adjust x and width to match the negative scale
-  // this.y,
-  // this.width,
-  // this.height
-  // );
-  // ctx.restore();
-
   draw() {
-    ctx.globalAlpha = 1
-    ctx.drawImage(
-      this.flyDuck,
-      (this.animate * 375) / 9,
-      (this.position * 267) / 9.2068965,
-      35,
-      35,
-      this.x,
-      this.y,
-      this.width,
-      this.height
-    )
+    if (!this.reverse) { // Draw tuck to fly from left to right
+      ctx.globalAlpha = 1
+      ctx.drawImage(
+        this.flyDuck,
+        (this.animate * 375) / 9,
+        (this.position * 267) / 9.2068965,
+        35,
+        35,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      )
+    } else if (this.reverse) { // Draw tuck to fly from right to left
+      ctx.save()
+      ctx.scale(-1, 1)
+      ctx.drawImage(
+        this.flyDuck,
+        (this.animate * 375) / 9,
+        (this.position * 267) / 9.2068965,
+        35,
+        35,
+        -this.x - this.width, // Adjust x and width to match the negative scale
+        this.y,
+        this.width,
+        this.height
+      )
+      ctx.restore()
+    }
+
   }
 }
 
@@ -132,12 +201,83 @@ class Wind {
   }
 }
 
+class WindRose {
+  constructor() { 
+    this.offset = 50
+    this.x0 = sight.width - this.offset
+    this.y0 = sight.height - this.offset
+    this.theta = 0
+    this.mult = this.offset * 0.1875
+  }
+
+  draw(wind, spawnArea) {
+    this.xSpeed = wind.xSpeed
+    this.ySpeed = wind.ySpeed
+    this.zSpeed = wind.zSpeed
+
+    this.theta = Math.tanh(
+      sight.width - spawnArea.spawnH - spawnArea.spawnX,
+      sight.height - spawnArea.spawnH - spawnArea.spawnY
+    )
+
+    //Skull
+    ctx.globalAlpha = 0.5
+    ctx.strokeStyle = "black"
+    ctx.lineWidth = 6
+    ctx.beginPath()
+    ctx.moveTo(this.x0 - this.offset * 0.93, this.y0)
+    ctx.lineTo(this.x0 + this.offset * 0.93, this.y0)
+    ctx.moveTo(this.x0, this.y0 - this.offset * 0.93)
+    ctx.lineTo(this.x0, this.y0 + this.offset * 0.93)
+    ctx.moveTo(
+      this.x0 + Math.sin(this.theta) * -(this.mult / 3) * this.mult * 1,
+      this.y0 + Math.cos(this.theta) * -(this.mult / 3) * this.mult * 1
+    )
+    ctx.lineTo(
+      this.x0 + Math.sin(this.theta) * (this.mult / 3) * this.mult * 1,
+      this.y0 + Math.cos(this.theta) * (this.mult / 3) * this.mult * 1
+    )
+    ctx.closePath()
+    ctx.stroke()
+    ctx.globalAlpha = 1
+
+    // Axis
+    ctx.strokeStyle = "white"
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(this.x0, this.y0)
+    ctx.lineTo(this.x0 + wind.xSpeed * this.mult, this.y0)
+    ctx.moveTo(this.x0, this.y0)
+    ctx.lineTo(this.x0, this.y0 + -wind.ySpeed * this.mult)
+    ctx.moveTo(this.x0, this.y0)
+    ctx.lineTo(
+      this.x0 + Math.sin(this.theta) * -this.zSpeed * this.mult * 0.66,
+      this.y0 + Math.cos(this.theta) * -this.zSpeed * this.mult * 0.66
+    )
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.font = "10px Arial"
+    ctx.fillStyle = "white"
+    ctx.fillText(`X`, this.x0 + 39, this.y0 - 4)
+    
+    ctx.font = "10px Arial"
+    ctx.fillText(`Y`, this.x0 - 3, this.y0 - 48)
+
+    ctx.save()
+    ctx.translate(this.x0 - 20, this.y0 - 18)
+    ctx.rotate(this.theta + 5.81)
+    ctx.fillText("Z", 0, 0)
+    ctx.restore()
+  }
+}
+
 class Sniper {
-  constructor(rifle) {
+  constructor(sniperGun) {
     this.x = 0 // m, position in x
     this.y = 0 // m, position in y
     this.z = 0
-    this.rifle = rifle
+    this.rifle = sniperGun
     this.shotAngle = 90
     this.ammo = 5
     
@@ -171,8 +311,8 @@ class Sniper {
   }
 
   // 3D Parabolic shot engine 
-  shot(wind, Duck) {
-    const g = 9.81 // acceleration due to gravity
+  shot(wind, duck, world) {
+    let g = world.gravity //9.807 // acceleration due to gravity
     const rho = wind.rho // air density
     const Cd = wind.Cd // air drag coefficient
     const A = this.rifle.bulletFrontalArea // projectile forntal area
@@ -200,11 +340,11 @@ class Sniper {
 
     let endPos = [x, y, z] // projectile end position
 
-    const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
-    const rand = () => Math.floor(Math.random() * 0.2) * negRand()
+    // const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
+    // const rand = () => Math.floor(Math.random() * 0.2) * negRand()
 
     // Simulation loop
-    while (z < Duck.distance) {
+    while (z < duck.distance) {
       // Calculate wind variables
       const v = Math.sqrt(
         wind.xSpeed ** 2 + wind.ySpeed ** 2 + wind.zSpeed ** 2
@@ -214,9 +354,13 @@ class Sniper {
       const ayr = v === 0 ? 0 : (-Fd * vy + wind.ySpeed) / (m * v)
       const azr = v === 0 ? 0 : (-Fd * vz + wind.zSpeed) / (m * v)
 
+      // const axr = v === 0 ? 0 : (-Fd * vx + 0) / (m * v)
+      // const ayr = v === 0 ? 0 : (-Fd * vy + 0) / (m * v)
+      // const azr = v === 0 ? 0 : (-Fd * vz + 0) / (m * v)
+
       // Calculate acceleration
       ax += axr * dt
-      ay += (-ayr + g) * dt
+      ay += (-ayr + (g * 10)) * dt
       az += azr * dt
 
       // Update velocity and position
@@ -238,14 +382,7 @@ class Sniper {
       if (y >= sight.height || x >= sight.width) break
     }
 
-    if (
-      x.toFixed() === Duck.x.toFixed() &&
-      y.toFixed() === Duck.y.toFixed() &&
-      z.toFixed() === Duck.distance.toFixed()
-    ) {
-      console.log("Duck down!")
-    }
-
+    
     return [x, y, z, t]
   }
 }
@@ -309,6 +446,7 @@ class Bang {
   }
 
   draw() {
+    ctx.globalAlpha = 0.4
     ctx.drawImage(
       this.img,
       this.x - this.width / 2,
@@ -316,6 +454,7 @@ class Bang {
       this.width,
       this.height
     )
+    ctx.globalAlpha = 1
   }
 }
 
@@ -325,7 +464,8 @@ class World {
     this.distance = 0
     this.ratio = 0
     this.distance = 0
-    // this.gravity = 0
+    this.name = 'Earth'
+    this.gravity = 9.8
   }
 
   createWorld() {
@@ -336,58 +476,321 @@ class World {
       case 0:
         this.ratio = randomRatio(0.75, 0.8)
         this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
         return
       case 1:
+        this.ratio = randomRatio(0.75, 0.8)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 2:
+        this.ratio = randomRatio(0.75, 0.8)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 3:
+        this.ratio = randomRatio(0.7, 0.75)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 4:
+        this.ratio = randomRatio(0.7, 0.75)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 5:
+        this.ratio = randomRatio(0.7, 0.75)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 6:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 7:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 8:
+        this.ratio = randomRatio(0.65, 0.7)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 9:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 10:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 11:
+        this.ratio = randomRatio(0.6, 0.65)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 12:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 13:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 14:
+        this.ratio = randomRatio(0.55, 0.6)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 15:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 16:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 17:
+        this.ratio = randomRatio(0.5, 0.55)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 18:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 19:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 20:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 21:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 22:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 23:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 24:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 25:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 26:
+        this.ratio = randomRatio(0.35, 0.4)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 27:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Earth"
+        this.gravity = 9.8
+        return
+      case 28:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Saturn"
+        this.gravity = 10.44
+        return
+      case 29:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Neptune"
+        this.gravity = 11.15
+        return
+      case 30:
+        this.ratio = randomRatio(0.75, 0.8)
+        this.distance = distancePerRatio(this.ratio)
+        this.name = "Jupiter"
+        this.gravity = 24.79
+        return
+      case 31:
         this.ratio = randomRatio(0.7, 0.75)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 2:
+      case 32:
         this.ratio = randomRatio(0.65, 0.7)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 3:
+      case 33:
         this.ratio = randomRatio(0.6, 0.65)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 4:
+      case 34:
         this.ratio = randomRatio(0.55, 0.6)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 5:
-        this.ratio = randomRatio(0.4, 0.55)
+      case 35:
+        this.ratio = randomRatio(0.5, 0.55)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 6:
+      case 36:
+        this.ratio = randomRatio(0.45, 0.5)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 37:
+        this.ratio = randomRatio(0.4, 0.45)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 38:
         this.ratio = randomRatio(0.35, 0.4)
         this.distance = distancePerRatio(this.ratio)
         return
-      case 7:
-        this.ratio = randomRatio(0.30, 0.35)
+      case 39:
+        this.ratio = randomRatio(0.3, 0.35)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 40:
+        this.ratio = randomRatio(0.25, 0.3)
+        this.distance = distancePerRatio(this.ratio)
+        return
+      case 41:
+        this.ratio = randomRatio(0.2, 0.25)
         this.distance = distancePerRatio(this.ratio)
         return
     }
   }
+}
 
-  // planetG = [
-  //   {
-  //     planet: "Earth",
-  //     gravity: 9.807,
-  //   },
-  //   {
-  //     planet: "Saturn",
-  //     gravity: 10.44,
-  //   },
-  //   {
-  //     planet: "Neptune",
-  //     gravity: 11.15,
-  //   },
-  //   {
-  //     planet: "Jupiter",
-  //     gravity: 24.79,
-  //   },
-  //   {
-  //     planet: "Sun",
-  //     gravity: 274.0,
-  //   },
-  // ]
+class Sight {
+  constructor() {
+    this.rad = 40
+    this.lineWidth = 5
+  }
+
+  draw() {
+
+    const translateShotPos = (cursorPos) => {
+      const x =
+        cursorPos[0] * world.ratio + (sight.width * (1 - world.ratio)) / 2
+      const y =
+        cursorPos[1] * world.ratio + (sight.height * (1 - world.ratio)) / 2
+      // const z = cursorPos[2]
+      const shotPos = [x, y]
+      return shotPos
+    }
+
+    const laser = translateShotPos(pointer)
+
+    
+    ctx.globalAlpha = 0.5
+    ctx.beginPath()
+    ctx.fillStyle = "red"
+    ctx.arc(laser[0], laser[1], this.rad / 8, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.fill()
+
+    ctx.globalAlpha = 0.5
+
+    ctx.beginPath()
+    ctx.strokeStyle = "white"
+    ctx.lineWidth = this.lineWidth / 2
+    ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    // ctx.strokeStyle = "white"
+    ctx.lineWidth = this.lineWidth / 3
+    ctx.arc(pointer[0], pointer[1], this.rad - 3, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.arc(pointer[0], pointer[1], this.rad + 3, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    // ctx.strokeStyle = "black"
+    ctx.lineWidth = this.lineWidth + 4
+    ctx.moveTo(pointer[0], pointer[1] + 29)
+    ctx.lineTo(pointer[0], pointer[1] + 51)
+    ctx.moveTo(pointer[0], pointer[1] - 29)
+    ctx.lineTo(pointer[0], pointer[1] - 51)
+    ctx.moveTo(pointer[0] + 29, pointer[1])
+    ctx.lineTo(pointer[0] + 51, pointer[1])
+    ctx.moveTo(pointer[0] - 29, pointer[1])
+    ctx.lineTo(pointer[0] - 51, pointer[1])
+    ctx.closePath()
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.fillStyle = "red"
+    ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.fill()
+
+    ctx.beginPath()
+    ctx.strokeStyle = "red"
+    ctx.lineWidth = this.lineWidth
+    ctx.arc(pointer[0], pointer[1], this.rad, 0, Math.PI * 2)
+    ctx.moveTo(pointer[0], pointer[1] + 30)
+    ctx.lineTo(pointer[0], pointer[1] + 50)
+    ctx.moveTo(pointer[0], pointer[1] - 30)
+    ctx.lineTo(pointer[0], pointer[1] - 50)
+    ctx.moveTo(pointer[0] + 30, pointer[1])
+    ctx.lineTo(pointer[0] + 50, pointer[1])
+    ctx.moveTo(pointer[0] - 30, pointer[1])
+    ctx.lineTo(pointer[0] - 50, pointer[1])
+    ctx.closePath()
+    ctx.stroke()
+    
+    ctx.globalAlpha = 1
+  }
 }

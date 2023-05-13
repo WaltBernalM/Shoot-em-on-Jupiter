@@ -1,10 +1,12 @@
 const world = new World()
-// world.level = 7
+// world.level = 39
 world.createWorld()
 
-let spawnArea = new TargetSpawnArea(world.ratio)
+let spawnArea = new TargetSpawnArea(world)
 
 const rifle = new SniperGun()
+rifle.switchRifle(0)
+
 const sniper = new Sniper(rifle)
 
 let duck = new Duck(spawnArea)
@@ -16,3 +18,7 @@ wind.randomWind()
 
 const bang = new Bang(click)
 const hit = new Hit(shot)
+
+const windRose = new WindRose()
+
+const gunSight = new Sight()
