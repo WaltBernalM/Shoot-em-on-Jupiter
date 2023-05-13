@@ -22,30 +22,6 @@ function clearCanvas() {
 }
 
 function printData() { 
-  // document.querySelector(
-  //   "#wind-data"
-  // ).innerHTML = `Wind = [${wind.xSpeed}m/s, ${wind.ySpeed}m/s, ${wind.zSpeed}m/s]; Cd = ${wind.Cd}; Rho = ${wind.rho}kg/m^3`
-
-  // document.querySelector(
-  //   "#target-data"
-  // ).innerHTML = `Duck = [${duck.x.toFixed()}, ${duck.y} ,${duck.distance.toFixed()}];
-  // ${duck.reverse}`
-
-  // document.querySelector(
-  //   "#rifle-data"
-  // ).innerHTML = `Bullet: Speed = ${sniper.rifle.bulletSpeed}m/s; Mass = ${sniper.rifle.bulletMass}kg; Front Area = ${sniper.rifle.bulletFrontalArea} m^2`
-
-  // document.querySelector(
-  //   "#sniper-data"
-  // ).innerHTML = `User click coord = [${click[0]}, ${click[1]}]; ammo = ${sniper.ammo}`
-
-  // document.querySelector(
-  //     "#frames"
-  // ).innerHTML = `game frames = ${gameFrames};
-  //   target down = ${targetDown};
-  //   duck spawns = ${duckSpawns};
-  //   hunt count = ${huntCount};
-  //   world ratio = ${world.ratio.toFixed(2)}; level = ${world.level}`
 
   const scoreInfo = `Score: ${score}`
   ctx.font = "30px Arial"

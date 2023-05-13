@@ -64,13 +64,6 @@ class TargetSpawnArea {
 
 class SniperGun {
   constructor() {
-    // this.name //"Barret M82"
-    // this.range //1300 // maximum range or rifle
-    // this.bulletSpeed //853 // m/s
-    // this.bulletCaliber //"50 BMG"
-    // this.bulletFrontalArea //0.000129
-    // this.bulletMass //0.042 // kg
-
     this.arsenal = [
       {
         name: "SIG SSG 3000",
