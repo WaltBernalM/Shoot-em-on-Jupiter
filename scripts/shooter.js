@@ -32,7 +32,7 @@ function printData() {
     28
   )
 
-  const levelInfo = `Level: ${world.level + 1} 
+  const levelInfo = `Level: ${world.level} 
   ${world.name} (${world.gravity}m/s^2)`
   ctx.font = "16px Arial"
   ctx.fillStyle = "white"
@@ -42,10 +42,10 @@ function printData() {
     50
   )
   
-  const rifleInfo = `${sniper.rifle.name}: ${sniper.rifle.bulletCaliber}`
   ctx.font = "16px Arial"
   ctx.fillStyle = "white"
-  ctx.fillText(rifleInfo, 0, 16)
+  ctx.fillText(`Rifle: ${sniper.rifle.name}`, 4, 16)
+  ctx.fillText(`Cal: ${sniper.rifle.bulletCaliber}`, 4, 32)
 }
 
 function gameOver() {
@@ -67,7 +67,7 @@ function gameOver() {
     ctx.font = "30px Arial"
     ctx.fillText(
       finalScore,
-      sight.width / 2 - ctx.measureText(loseGame).width / 2,
+      sight.width / 2 - ctx.measureText(finalScore).width / 2,
       sight.height / 2 + 40
     )
     requestId = cancelAnimationFrame(requestId)
@@ -75,17 +75,18 @@ function gameOver() {
 }
 
 function levelControl() {
-  if (world.level <= 40) {
+  if (world.level < 40) {
     if (sniper.ammo >= 0 && huntCount >= 3) {
       world.level += 1
       duckSpawns = 0
       huntCount = 0
 
+      // Rifle switch per level
       switch (true) {
-        case world.level < 15:
+        case world.level <= 15:
           rifle.switchRifle(0)
           break
-        case world.level < 30:
+        case world.level <= 30:
           rifle.switchRifle(1)
           break
         default:
@@ -94,7 +95,6 @@ function levelControl() {
       }
 
       sniper.ammo = 5
-
       world.createWorld()
       spawnArea = new TargetSpawnArea(world)
       spawnArea.draw()
@@ -104,8 +104,8 @@ function levelControl() {
       duck.randomSpawn()
       duck.draw()
     }
-  } else if (world.level >= 41){
-    world.level = 41
+  } else if (world.level >= 40){
+    world.level = 40
     duck.randomSpawn()
     duck.draw()
   } 
@@ -208,7 +208,7 @@ function animateDistance() {
   ctx.beginPath()
   ctx.moveTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
   ctx.lineTo(touchPointX - 30, spawnArea.spawnY + spawnArea.spawnH + 17)
-  ctx.lineTo(touchPointX - 12, spawnArea.spawnY + spawnArea.spawnH + 17)
+  ctx.lineTo(touchPointX - 5, spawnArea.spawnY + spawnArea.spawnH + 17)
   ctx.closePath()
   ctx.fillStyle = "white"
   ctx.fill()

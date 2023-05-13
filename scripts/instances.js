@@ -1,5 +1,4 @@
 const world = new World()
-// world.level = 39
 world.createWorld()
 
 let spawnArea = new TargetSpawnArea(world)

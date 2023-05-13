@@ -50,15 +50,17 @@ class TargetSpawnArea {
     ctx.fillRect(0, 0, sight.width, sight.height)
     ctx.globalAlpha = 1
 
-    // ctx.globalAlpha = 0.1
-    // ctx.fillStyle = "black"
-    // ctx.fillRect(
-    //   sight.width / 2 - (sight.width * this.ratio) / 2,
-    //   this.spawnY,
-    //   sight.width * this.ratio,
-    //   this.spawnH
-    // )
-    // ctx.globalAlpha = 1
+    /*
+    ctx.globalAlpha = 0.1
+    ctx.fillStyle = "black"
+    ctx.fillRect(
+      sight.width / 2 - (sight.width * this.ratio) / 2,
+      this.spawnY,
+      sight.width * this.ratio,
+      this.spawnH
+    )
+    ctx.globalAlpha = 1
+    */
   }
 }
 
@@ -98,7 +100,6 @@ class SniperGun {
       : pos > 2
         ? pos = 2
         : void (0)
-    
     this.name = this.arsenal[pos].name
     this.range = this.arsenal[pos].range
     this.bulletSpeed = this.arsenal[pos].bulletSpeed
@@ -113,8 +114,8 @@ class Duck {
     this.distance = 0 // m, distance to the Duck from the sniper position (z axis)
     this.height = spawnArea.spawnH / 4
     this.width = spawnArea.spawnW / (8 / world.ratio)
-    this.x = 0//Math.floor(Math.random() * spawnArea.spawnW + spawnArea.spawnX) // m, lateral position of the Duck
-    this.y = 0//spawnArea.spawnY + spawnArea.spawnH - this.height * 1 // m, height of the Duck
+    this.x = 0 // m, lateral position of the Duck
+    this.y = 0 // m, height of the Duck
     this.animate = 0 // Animation sequence value
     this.position = 0 // select position of the sprite
     this.flyDuck = new Image()
@@ -303,11 +304,12 @@ class Sniper {
     )
   }
 
-  // 3D Parabolic shot engine 
-  shot(wind, duck, world) {
-    let g = world.gravity //9.807 // acceleration due to gravity
-    const rho = wind.rho // air density
-    const Cd = wind.Cd // air drag coefficient
+  // Custom 3D Parabolic shot engine (where the magi happens)
+  // Emulates part of a real life shot/
+  shot(resistance, target, world) {
+    let g = world.gravity // acceleration due to gravity
+    const rho = resistance.rho // air density
+    const Cd = resistance.Cd // air drag coefficient
     const A = this.rifle.bulletFrontalArea // projectile forntal area
     const m = this.rifle.bulletMass // projectile mass
     const v0 = this.rifle.bulletSpeed // m/s, initial velocity of the bullet
@@ -331,29 +333,20 @@ class Sniper {
     let az = 0 // projectile z-axis acceleration
     let t = 0 // projectile time elapsed
 
-    let endPos = [x, y, z] // projectile end position
-
-    // const negRand = () => (Math.floor(Math.random() * 10) % 2 === 0 ? 1 : -1)
-    // const rand = () => Math.floor(Math.random() * 0.2) * negRand()
-
     // Simulation loop
-    while (z < duck.distance) {
+    while (z < target.distance) {
       // Calculate wind variables
       const v = Math.sqrt(
-        wind.xSpeed ** 2 + wind.ySpeed ** 2 + wind.zSpeed ** 2
+        resistance.xSpeed ** 2 + resistance.ySpeed ** 2 + resistance.zSpeed ** 2
       )
       const Fd = v === 0 ? 0 : 0.5 * rho * v ** 2 * Cd * A
-      const axr = v === 0 ? 0 : (-Fd * vx + wind.xSpeed) / (m * v)
-      const ayr = v === 0 ? 0 : (-Fd * vy + wind.ySpeed) / (m * v)
-      const azr = v === 0 ? 0 : (-Fd * vz + wind.zSpeed) / (m * v)
-
-      // const axr = v === 0 ? 0 : (-Fd * vx + 0) / (m * v)
-      // const ayr = v === 0 ? 0 : (-Fd * vy + 0) / (m * v)
-      // const azr = v === 0 ? 0 : (-Fd * vz + 0) / (m * v)
+      const axr = v === 0 ? 0 : (-Fd * vx + resistance.xSpeed) / (m * v)
+      const ayr = v === 0 ? 0 : (-Fd * vy + resistance.ySpeed) / (m * v)
+      const azr = v === 0 ? 0 : (-Fd * vz + resistance.zSpeed) / (m * v)
 
       // Calculate acceleration
       ax += axr * dt
-      ay += (-ayr + (g * 10)) * dt
+      ay += (-ayr + (g * 10)) * dt // g * 10 is an adjustment to approach reality values
       az += azr * dt
 
       // Update velocity and position
@@ -365,17 +358,10 @@ class Sniper {
       z += vz * dt
       t += dt
 
-      endPos = [
-        Number(x.toFixed(2)),
-        Number(y.toFixed(2)),
-        Number(z.toFixed(2)),
-      ]
-
       if (y <= 0 || x <= 0) break //  if the projectile exit the plane break the loop
       if (y >= sight.height || x >= sight.width) break
     }
 
-    
     return [x, y, z, t]
   }
 }
@@ -453,249 +439,59 @@ class Bang {
 
 class World {
   constructor() { 
-    this.level = 0
+    this.level = 1
     this.distance = 0
     this.ratio = 0
     this.distance = 0
     this.name = 'Earth'
     this.gravity = 9.8
+    this.maxDis = 0.815
+    this.minDis = 0.765
   }
 
   createWorld() {
     const randomRatio = (min, max) =>  Math.random() * (max- min) +min
     const distancePerRatio = (r) => -2000 * r + 2000
 
-    switch (this.level) {
-      case 0:
-        this.ratio = randomRatio(0.75, 0.8)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 1:
-        this.ratio = randomRatio(0.75, 0.8)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 2:
-        this.ratio = randomRatio(0.75, 0.8)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 3:
-        this.ratio = randomRatio(0.7, 0.75)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 4:
-        this.ratio = randomRatio(0.7, 0.75)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 5:
-        this.ratio = randomRatio(0.7, 0.75)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 6:
-        this.ratio = randomRatio(0.65, 0.7)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 7:
-        this.ratio = randomRatio(0.65, 0.7)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 8:
-        this.ratio = randomRatio(0.65, 0.7)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 9:
-        this.ratio = randomRatio(0.6, 0.65)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 10:
-        this.ratio = randomRatio(0.6, 0.65)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 11:
-        this.ratio = randomRatio(0.6, 0.65)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 12:
-        this.ratio = randomRatio(0.55, 0.6)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 13:
-        this.ratio = randomRatio(0.55, 0.6)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 14:
-        this.ratio = randomRatio(0.55, 0.6)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 15:
-        this.ratio = randomRatio(0.5, 0.55)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 16:
-        this.ratio = randomRatio(0.5, 0.55)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 17:
-        this.ratio = randomRatio(0.5, 0.55)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 18:
-        this.ratio = randomRatio(0.45, 0.5)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 19:
-        this.ratio = randomRatio(0.45, 0.5)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 20:
-        this.ratio = randomRatio(0.45, 0.5)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 21:
-        this.ratio = randomRatio(0.4, 0.45)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 22:
-        this.ratio = randomRatio(0.4, 0.45)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 23:
-        this.ratio = randomRatio(0.4, 0.45)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 24:
-        this.ratio = randomRatio(0.35, 0.4)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 25:
-        this.ratio = randomRatio(0.35, 0.4)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 26:
-        this.ratio = randomRatio(0.35, 0.4)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 27:
-        this.ratio = randomRatio(0.3, 0.35)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Earth"
-        this.gravity = 9.8
-        return
-      case 28:
-        this.ratio = randomRatio(0.3, 0.35)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Saturn"
-        this.gravity = 10.44
-        return
-      case 29:
-        this.ratio = randomRatio(0.3, 0.35)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Neptune"
-        this.gravity = 11.15
-        return
-      case 30:
-        this.ratio = randomRatio(0.75, 0.8)
-        this.distance = distancePerRatio(this.ratio)
-        this.name = "Jupiter"
-        this.gravity = 24.79
-        return
-      case 31:
-        this.ratio = randomRatio(0.7, 0.75)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 32:
-        this.ratio = randomRatio(0.65, 0.7)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 33:
-        this.ratio = randomRatio(0.6, 0.65)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 34:
-        this.ratio = randomRatio(0.55, 0.6)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 35:
-        this.ratio = randomRatio(0.5, 0.55)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 36:
-        this.ratio = randomRatio(0.45, 0.5)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 37:
-        this.ratio = randomRatio(0.4, 0.45)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 38:
-        this.ratio = randomRatio(0.35, 0.4)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 39:
-        this.ratio = randomRatio(0.3, 0.35)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 40:
-        this.ratio = randomRatio(0.25, 0.3)
-        this.distance = distancePerRatio(this.ratio)
-        return
-      case 41:
-        this.ratio = randomRatio(0.2, 0.25)
-        this.distance = distancePerRatio(this.ratio)
-        return
+    if (this.level <= 30) {
+      switch (true) {
+        case this.level % 3 === 1:
+          this.name = "Earth"
+          this.gravity = 9.8
+          this.maxDis = Number((this.maxDis - 0.015).toFixed(3))
+          this.minDis = Number((this.minDis - 0.015).toFixed(3))
+          this.ratio = randomRatio(this.minDis, this.maxDis)
+          this.distance = distancePerRatio(this.ratio)
+          break
+        case this.level % 3 === 2:
+          this.name = "Saturn"
+          this.gravity = 10.44
+          this.maxDis = Number((this.maxDis - 0.015).toFixed(3))
+          this.minDis = Number((this.minDis - 0.015).toFixed(3))
+          this.ratio = randomRatio(this.minDis, this.maxDis)
+          this.distance = distancePerRatio(this.ratio)
+          break
+        case this.level % 3 === 0:
+          this.name = "Neptune"
+          this.gravity = 11.15
+          this.maxDis = Number((this.maxDis - 0.02).toFixed(3))
+          this.minDis = Number((this.minDis - 0.02).toFixed(3))
+          this.ratio = randomRatio(this.minDis, this.maxDis)
+          this.distance = distancePerRatio(this.ratio)
+          break
+      }
+    } else if (this.level === 31){
+      this.name = "Jupiter"
+      this.gravity = 24.79
+      this.maxDis = 0.8
+      this.minDis = 0.75
+      this.ratio = randomRatio(this.minDis, this.maxDis)
+      this.distance = distancePerRatio(this.ratio)
+    } else {
+      this.maxDis -= 0.05
+      this.minDis -= 0.05
+      this.ratio = randomRatio(this.minDis, this.maxDis)
+      this.distance = distancePerRatio(this.ratio)
     }
   }
 }
