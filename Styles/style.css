@@ -5,10 +5,9 @@ html {
   margin: 0;
 }
 
-canvas {
+/* canvas {
   border: 1px solid red;
-  cursor: none;
-}
+} */
 
 body {
   width: 100vw;

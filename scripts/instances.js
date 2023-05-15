@@ -1,23 +1,23 @@
-const world = new World()
+let world = new World()
 world.createWorld()
 
 let spawnArea = new TargetSpawnArea(world)
 
-const rifle = new SniperGun()
+let rifle = new SniperGun()
 rifle.switchRifle(0)
 
-const sniper = new Sniper(rifle)
+let sniper = new Sniper(rifle)
 
 let duck = new Duck(spawnArea)
 duck.randomSpawn()
 duck.distance = world.distance
 
-const wind = new Wind() // z-axis affects y-axis
+let wind = new Wind() // z-axis affects y-axis
 wind.randomWind()
 
-const bang = new Bang(click)
-const hit = new Hit(shot)
+let bang = new Bang(click)
+let hit = new Hit(shot)
 
-const windRose = new WindRose()
+let windRose = new WindRose()
 
-const gunSight = new Sight()
+let gunSight = new Sight()

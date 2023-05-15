@@ -76,7 +76,7 @@ class SniperGun {
         bulletMass: 0.0098,
       },
       {
-        name: "OTs-03 Dragunov SVU",
+        name: "Dragunov SVU",
         range: 1200, // maximum range or rifle
         bulletSpeed: 830, // m/s
         bulletCaliber: "7.62x51mm",
@@ -197,11 +197,12 @@ class Wind {
 
 class WindRose {
   constructor() { 
-    this.offset = 50
-    this.x0 = sight.width - this.offset
-    this.y0 = sight.height - this.offset
+    this.offset = sight.width * 0.07
+    this.x0 = sight.width - this.offset * 1.2
+    this.y0 = sight.height - this.offset * 1.5
     this.theta = 0
     this.mult = this.offset * 0.1875
+    this.rad = this.offset + this.offset * 0.1
   }
 
   draw(wind, spawnArea) {
@@ -216,21 +217,30 @@ class WindRose {
 
     //Skull
     ctx.globalAlpha = 0.5
+    ctx.fillStyle = "orange"
+    ctx.beginPath()
+    ctx.arc(this.x0, this.y0, this.rad, 0, Math.PI * 2)
+    ctx.fillRect(this.x0 - this.rad, this.y0, this.x0, this.y0)
+    ctx.fillRect(this.x0, this.y0 - this.rad, this.x0, this.y0)
+    ctx.closePath()
+    ctx.fill()
+    
+    ctx.globalAlpha = 0.6
     ctx.strokeStyle = "black"
     ctx.lineWidth = 6
     ctx.beginPath()
-    ctx.moveTo(this.x0 - this.offset * 0.93, this.y0)
-    ctx.lineTo(this.x0 + this.offset * 0.93, this.y0)
-    ctx.moveTo(this.x0, this.y0 - this.offset * 0.93)
-    ctx.lineTo(this.x0, this.y0 + this.offset * 0.93)
+    // x-axis
+    ctx.moveTo(this.x0 - this.offset * 0.98, this.y0)
+    ctx.lineTo(this.x0 + this.offset * 0.98, this.y0)
+    // y-axis
+    ctx.moveTo(this.x0, this.y0 - this.offset * 0.98)
+    ctx.lineTo(this.x0, this.y0 + this.offset * 0.98)
+    // z-axis
     ctx.moveTo(
-      this.x0 + Math.sin(this.theta) * -(this.mult / 3) * this.mult * 1,
-      this.y0 + Math.cos(this.theta) * -(this.mult / 3) * this.mult * 1
+      this.x0 - this.offset / 1.5,
+      this.y0 - this.offset / 2.5
     )
-    ctx.lineTo(
-      this.x0 + Math.sin(this.theta) * (this.mult / 3) * this.mult * 1,
-      this.y0 + Math.cos(this.theta) * (this.mult / 3) * this.mult * 1
-    )
+    ctx.lineTo(this.x0 + this.offset / 1.5, this.y0 + this.offset / 2.5)
     ctx.closePath()
     ctx.stroke()
     ctx.globalAlpha = 1
@@ -251,18 +261,29 @@ class WindRose {
     ctx.closePath()
     ctx.stroke()
 
-    ctx.font = "10px Arial"
+    const windTitle = "WIND"
+    const windVectors = "[x, y, z]"
+    const windInfo = `[${wind.xSpeed}, ${wind.ySpeed}, ${wind.zSpeed}]`
+    ctx.font = "10px Verdana"
     ctx.fillStyle = "white"
-    ctx.fillText(`X`, this.x0 + 39, this.y0 - 4)
-    
-    ctx.font = "10px Arial"
-    ctx.fillText(`Y`, this.x0 - 3, this.y0 - 48)
-
-    ctx.save()
-    ctx.translate(this.x0 - 20, this.y0 - 18)
-    ctx.rotate(this.theta + 5.81)
-    ctx.fillText("Z", 0, 0)
-    ctx.restore()
+    ctx.fillText(
+      windTitle,
+      this.x0 + (sight.width - this.x0) / 2 - ctx.measureText(windTitle).width / 2 + ctx.lineWidth,
+      this.y0 - this.rad + 12
+    )
+    ctx.fillText(
+      windInfo,
+      this.x0 - ctx.measureText(windInfo).width / 2,
+      this.y0 + this.rad + 10
+    )
+    ctx.font = "9px Verdana"
+    ctx.fillText(
+      windVectors,
+      this.x0 +
+        (sight.width - this.x0) / 2 -
+        ctx.measureText(windTitle).width / 2 - ctx.lineWidth,
+      this.y0 - this.rad + 24
+    )
   }
 }
 
@@ -498,12 +519,11 @@ class World {
 
 class Sight {
   constructor() {
-    this.rad = 40
+    this.rad = sight.width * 0.05
     this.lineWidth = 5
   }
 
   draw() {
-
     const translateShotPos = (cursorPos) => {
       const x =
         cursorPos[0] * world.ratio + (sight.width * (1 - world.ratio)) / 2
@@ -516,25 +536,18 @@ class Sight {
 
     const laser = translateShotPos(pointer)
 
-    
     ctx.globalAlpha = 0.5
+
+    // Laser sight 
     ctx.beginPath()
     ctx.fillStyle = "red"
-    ctx.arc(laser[0], laser[1], this.rad / 8, 0, Math.PI * 2)
+    ctx.arc(laser[0], laser[1], this.rad / 7, 0, Math.PI * 2)
     ctx.closePath()
     ctx.fill()
 
     ctx.globalAlpha = 0.5
 
     ctx.beginPath()
-    ctx.strokeStyle = "white"
-    ctx.lineWidth = this.lineWidth / 2
-    ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
-    ctx.closePath()
-    ctx.stroke()
-
-    ctx.beginPath()
-    // ctx.strokeStyle = "white"
     ctx.lineWidth = this.lineWidth / 3
     ctx.arc(pointer[0], pointer[1], this.rad - 3, 0, Math.PI * 2)
     ctx.closePath()
@@ -547,36 +560,35 @@ class Sight {
 
     ctx.beginPath()
     // ctx.strokeStyle = "black"
-    ctx.lineWidth = this.lineWidth + 4
-    ctx.moveTo(pointer[0], pointer[1] + 29)
-    ctx.lineTo(pointer[0], pointer[1] + 51)
-    ctx.moveTo(pointer[0], pointer[1] - 29)
-    ctx.lineTo(pointer[0], pointer[1] - 51)
-    ctx.moveTo(pointer[0] + 29, pointer[1])
-    ctx.lineTo(pointer[0] + 51, pointer[1])
-    ctx.moveTo(pointer[0] - 29, pointer[1])
-    ctx.lineTo(pointer[0] - 51, pointer[1])
+    ctx.lineWidth = this.lineWidth * 2
+
+    ctx.moveTo(pointer[0], pointer[1] + this.rad / 2 - this.lineWidth / 2)
+    ctx.lineTo(pointer[0], pointer[1] + this.rad * 1.5 + this.lineWidth / 2)
+    ctx.moveTo(pointer[0], pointer[1] - this.rad / 2 + this.lineWidth / 2)
+    ctx.lineTo(pointer[0], pointer[1] - this.rad * 1.5 - this.lineWidth / 2)
+
+    ctx.moveTo(pointer[0] + (this.rad / 2) - (this.lineWidth / 2), pointer[1])
+    ctx.lineTo(pointer[0] + this.rad * 1.5 + this.lineWidth / 2, pointer[1])
+    ctx.moveTo(pointer[0] - (this.rad / 2) + (this.lineWidth / 2), pointer[1])
+    ctx.lineTo(pointer[0] - this.rad * 1.5 - this.lineWidth / 2, pointer[1])
     ctx.closePath()
     ctx.stroke()
-
-    ctx.beginPath()
-    ctx.fillStyle = "red"
-    ctx.arc(pointer[0], pointer[1], this.rad / 6, 0, Math.PI * 2)
-    ctx.closePath()
-    ctx.fill()
 
     ctx.beginPath()
     ctx.strokeStyle = "red"
     ctx.lineWidth = this.lineWidth
     ctx.arc(pointer[0], pointer[1], this.rad, 0, Math.PI * 2)
-    ctx.moveTo(pointer[0], pointer[1] + 30)
-    ctx.lineTo(pointer[0], pointer[1] + 50)
-    ctx.moveTo(pointer[0], pointer[1] - 30)
-    ctx.lineTo(pointer[0], pointer[1] - 50)
-    ctx.moveTo(pointer[0] + 30, pointer[1])
-    ctx.lineTo(pointer[0] + 50, pointer[1])
-    ctx.moveTo(pointer[0] - 30, pointer[1])
-    ctx.lineTo(pointer[0] - 50, pointer[1])
+
+    ctx.moveTo(pointer[0], pointer[1] + this.rad / 2)
+    ctx.lineTo(pointer[0], pointer[1] + this.rad * 1.5)
+    ctx.moveTo(pointer[0], pointer[1] - this.rad / 2)
+    ctx.lineTo(pointer[0], pointer[1] - this.rad * 1.5)
+
+    ctx.moveTo(pointer[0] + this.rad / 2, pointer[1])
+    ctx.lineTo(pointer[0] + this.rad * 1.5, pointer[1])
+    ctx.moveTo(pointer[0] - this.rad / 2, pointer[1])
+    ctx.lineTo(pointer[0] - this.rad * 1.5, pointer[1])
+
     ctx.closePath()
     ctx.stroke()
     
