@@ -65,17 +65,17 @@ function printData() {
 
 function gameOver() {
   if (sniper.ammo <= 0 || (huntCount < 3 && duckSpawns === 10)) {
-    ctx.fillStyle = "black"
-    ctx.globalAlpha = 0.8
+    ctx.fillStyle = "#6EB5FF"
+    ctx.globalAlpha = 1
     ctx.fillRect(0, 0, sight.width, sight.height)
 
     const loseGame = 'Game Over'
-    ctx.font = "80px Arial"
+    ctx.font = "60px Arial"
     ctx.fillStyle = "white"
     ctx.fillText(
       loseGame,
       sight.width / 2 - ctx.measureText(loseGame).width / 2,
-      sight.height / 2
+      sight.height / 4
     )
 
     const finalScore = `Final score: ${score}`
@@ -83,11 +83,13 @@ function gameOver() {
     ctx.fillText(
       finalScore,
       sight.width / 2 - ctx.measureText(finalScore).width / 2,
-      sight.height / 2 + 40
+      sight.height / 4 + 40
     )
 
     requestId = cancelAnimationFrame(requestId)
+    sight.style.cursor = ""
     document.querySelector('#reset-button').style.display = ""
+    document.querySelector("#doge").style.display = ""
   }
 }
 
@@ -213,6 +215,7 @@ function ammoAnimation() {
 
 function gameEngine() {
   document.querySelector("#reset-button").style.display = "none"
+  document.querySelector("#doge").style.display = "none"
 
   gameFrames++
 
@@ -229,7 +232,7 @@ function gameEngine() {
   windRose.draw(wind, spawnArea)
   printData()
 
-  // gameOver()
+  gameOver()
 
   if (requestId) {
     requestAnimationFrame(gameEngine)
@@ -250,9 +253,9 @@ window.onload = () => {
   sight.style.display = "none"
   sight.style.cursor = 'none'
 
-  startGame()
-
   document.querySelector('#reset-button').style.display = "none"
+  document.querySelector('#doge').style.display = "none"
+
   document.getElementById("start-button").onclick = () => {
     console.log("start-button clicked")
     startGame()
@@ -261,6 +264,7 @@ window.onload = () => {
   document.getElementById("reset-button").onclick = () => { 
     huntCount = 0
     duckSpawns = 0
+    score = 0
 
     world = new World()
     world.createWorld()
@@ -278,7 +282,7 @@ window.onload = () => {
     windRose = new WindRose()
     gunSight = new Sight()
 
-    
+    sight.style.cursor = "none"
     requestId = requestAnimationFrame(gameEngine)
   }
 }
