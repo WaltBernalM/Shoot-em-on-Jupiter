@@ -18,16 +18,23 @@ body {
 
 #star {
   width: 70px;
+  margin-top: 10%;
 }
 
 .game-intro {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
   padding: 0% 10%;
   display: flex;
   flex: row;
 }
-
 .game-intro p {
   font-size: 20px;
+}
+.game-intro > strong {
+  margin-bottom: 20px;
 }
 
 h1 {
@@ -96,21 +103,17 @@ strong {
   left: 0;
   cursor: pointer;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
+  margin-top: 10px;
 }
 
 #instructions-button {
-  position: absolute;
-  top: 80%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 140px;
   cursor: pointer;
   background-color: black;
+  margin-bottom: 10%;
 }
 #instructions-button strong {
   font-size: 12px;
@@ -190,8 +193,11 @@ strong {
 h2 {
   color: purple;
   font-size: 5vh;
-  padding-bottom: 0;
-  margin-bottom: 0;
+  width: 400px;
+}
+
+#instructions article img:nth-of-type(2) {
+  margin-top: 10px;
 }
 
 footer {
