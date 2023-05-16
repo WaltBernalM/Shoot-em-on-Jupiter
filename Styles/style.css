@@ -7,8 +7,6 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
   width: 100vw;
   height: 100vh;
   text-align: center;
@@ -16,7 +14,6 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden;
 }
 
 #star {
@@ -131,12 +128,16 @@ strong {
 
 
 #instructions {
-  margin: 0;
   padding: 0;
   margin-bottom: 5%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   position: absolute;
   left: 0;
-  right: 0;
   top: 0;
 }
 #return-button {
@@ -168,9 +169,12 @@ strong {
 #instructions article {
   width: 400px;
   padding-bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 #instructions article p {
-  width: 400px;
+  width: 390px;
   text-align: justify;
   font-size: 2vh;
 }
@@ -178,20 +182,23 @@ strong {
   padding: 0;
   margin: 0;
 }
+#instructions article img:nth-of-type(2) {
+  margin-top: 20px;
+  margin-bottom: 10%;
+}
 
 h2 {
   color: purple;
   font-size: 5vh;
-  width: 400px;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 footer {
   position: fixed;
   bottom: 1%;
+  left: 1%;
   color: white;
   font-size: 1vw;
-}
-
-#instructions article img:nth-of-type(2) {
-  margin-top: 10px;
+  z-index: -1;
 }
