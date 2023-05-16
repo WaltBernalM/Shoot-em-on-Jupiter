@@ -2,8 +2,8 @@
 // Shooting Range
 
 const sight = document.getElementById("sight")
-sight.width = window.innerWidth - window.innerWidth * 0.2
-sight.height = sight.width * 0.75
+sight.width = window.innerWidth - window.innerWidth * 0.1
+sight.height = window.innerHeight - window.innerHeight * 0.1
 const ctx = sight.getContext("2d")
 
 let click = []
@@ -89,7 +89,8 @@ function gameOver() {
     requestId = cancelAnimationFrame(requestId)
     sight.style.cursor = ""
     document.querySelector('#reset-button').style.display = ""
-    document.querySelector("#doge").style.display = ""
+    document.querySelector('#doge').style.display = ""
+    // document.querySelector('#doge').style.height = sight.height * 0.1
   }
 }
 
@@ -255,9 +256,9 @@ window.onload = () => {
 
   document.querySelector('#reset-button').style.display = "none"
   document.querySelector('#doge').style.display = "none"
+  document.querySelector('#instructions').style.display = "none"
 
   document.getElementById("start-button").onclick = () => {
-    console.log("start-button clicked")
     startGame()
   }
 
@@ -285,4 +286,14 @@ window.onload = () => {
     sight.style.cursor = "none"
     requestId = requestAnimationFrame(gameEngine)
   }
+
+  document.querySelector("#instructions-button").onclick = () => { 
+    document.querySelector(".game-intro").style.display = "none"
+    document.querySelector("#instructions").style.display = ""
+  }
+
+  document.querySelector("#return-button").onclick = () => { 
+      document.querySelector(".game-intro").style.display = ""
+      document.querySelector("#instructions").style.display = "none"
+    }
 }

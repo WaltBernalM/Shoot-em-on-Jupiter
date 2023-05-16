@@ -22,7 +22,7 @@ body {
   justify-content: center;
 }
 
-img {
+#star {
   width: 70px;
 }
 
@@ -91,10 +91,10 @@ strong {
 
 #doge {
     position: absolute;
-    width: 30%;
-    bottom: 16.2%;
-    left: 35%;
-    z-index: 2;
+    width: 25%;
+    bottom: 5%;
+    /* left: %; */
+    z-index: 1;
 }
 
 #reset-button {
@@ -130,4 +130,66 @@ strong {
   border: 2px solid #f9c653;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+
+#instructions {
+  padding: 0;
+  margin-bottom: 5%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+#return-button {
+  width: 100px;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10%;
+  cursor: pointer;
+}
+#instructions button img {
+  width: 8px;
+}
+#instructions img {
+  width: 400px;
+  border: 3px solid purple;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+#article-container {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  align-items: center;
+}
+
+#instructions article {
+  width: 400px;
+  padding-bottom: 10%;
+}
+#instructions article p {
+  width: 400px;
+  text-align: justify;
+  font-size: 2vh;
+}
+#instructions article img {
+  padding: 0;
+  margin: 0;
+}
+
+h2 {
+  color: purple;
+  font-size: 5vh;
+  width: 400px;
+}
+
+footer {
+  position: fixed;
+  bottom: 1%;
+  color: white;
+  font-size: 1vw;
 }
