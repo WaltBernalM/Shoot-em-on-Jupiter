@@ -2,6 +2,8 @@
 // Shooting Range
 
 const sight = document.getElementById("sight")
+sight.width = window.innerWidth - window.innerWidth * 0.1
+sight.height = window.innerHeight - window.innerHeight * 0.1
 const ctx = sight.getContext("2d")
 
 let click = []
@@ -21,46 +23,93 @@ function clearCanvas() {
   ctx.clearRect(0, 0, sight.width, sight.length)
 }
 
-function printData() { 
+function printData() {
+  const gameInfoWidth = 210
+  const gameInfoHeight = 75
+  const gameInfoX = sight.width / 2 - gameInfoWidth / 2
+  const gameInfoY = 5
+  ctx.globalAlpha = 0.8
+  ctx.fillStyle = "gray"
+  ctx.fillRect(gameInfoX, gameInfoY, gameInfoWidth, gameInfoHeight)
+  ctx.beginPath()
+  ctx.arc(
+    gameInfoX,
+    gameInfoY + gameInfoHeight / 2,
+    gameInfoHeight / 2,
+    Math.PI / 2,
+    -Math.PI / 2
+  )
+  ctx.closePath()
+  ctx.fill()
+
+  ctx.beginPath()
+  ctx.arc(
+    gameInfoX + gameInfoWidth,
+    gameInfoY + gameInfoHeight / 2,
+    gameInfoHeight / 2,
+    -Math.PI / 2,
+    Math.PI / 2
+  )
+  ctx.fill()
+
 
   const scoreInfo = `Score: ${score}`
-  ctx.font = "30px Arial"
+  ctx.font = "20px Verdana"
   ctx.fillStyle = "white"
   ctx.fillText(
     scoreInfo,
-    (sight.width / 2) - (ctx.measureText(scoreInfo).width / 2),
-    28
+    sight.width / 2 - ctx.measureText(scoreInfo).width / 2,
+    26
   )
 
-  const levelInfo = `Level: ${world.level} 
-  ${world.name} (${world.gravity}m/s^2)`
-  ctx.font = "16px Arial"
-  ctx.fillStyle = "white"
+  const levelInfo = `Level: ${world.level}`
+  const gravityInfo = `${world.name} (-${world.gravity}m/s²)`
+  ctx.font = "16px Verdana"
+  ctx.fillText(
+    gravityInfo,
+    sight.width / 2 - ctx.measureText(gravityInfo).width / 2,
+    48
+  )
   ctx.fillText(
     levelInfo,
     sight.width / 2 - ctx.measureText(levelInfo).width / 2,
-    50
+    70
   )
+
   
-  ctx.font = "16px Arial"
+  // Player info
+  const infoWidth = 108
+  const infoHeight = 41
+  const rad = infoHeight * 0.1
+  ctx.globalAlpha = 0.8
+  ctx.fillStyle = "purple"
+  ctx.beginPath()
+  ctx.arc(infoWidth, infoHeight, rad, 0, Math.PI * 2)
+  ctx.closePath()
+  ctx.fill()
+  ctx.fillRect(0, 0, infoWidth + rad, infoHeight)
+  ctx.fillRect(0, infoHeight, infoWidth, rad)
+  ctx.globalAlpha = 1
+  ctx.font = "10px Verdana"
   ctx.fillStyle = "white"
-  ctx.fillText(`Rifle: ${sniper.rifle.name}`, 4, 16)
-  ctx.fillText(`Cal: ${sniper.rifle.bulletCaliber}`, 4, 32)
+  ctx.fillText(`Rifle: ${sniper.rifle.name}`, 4, 13)
+  ctx.fillText(`Cal: ${sniper.rifle.bulletCaliber}`, 4, 26)
+  ctx.fillText(`Ducks @ ${duck.distance.toFixed()}m`, 4, 39)
 }
 
 function gameOver() {
   if (sniper.ammo <= 0 || (huntCount < 3 && duckSpawns === 10)) {
-    ctx.fillStyle = "black"
-    ctx.globalAlpha = 0.8
+    ctx.fillStyle = "#6EB5FF"
+    ctx.globalAlpha = 1
     ctx.fillRect(0, 0, sight.width, sight.height)
 
     const loseGame = 'Game Over'
-    ctx.font = "80px Arial"
+    ctx.font = "60px Arial"
     ctx.fillStyle = "white"
     ctx.fillText(
       loseGame,
       sight.width / 2 - ctx.measureText(loseGame).width / 2,
-      sight.height / 2
+      sight.height / 4
     )
 
     const finalScore = `Final score: ${score}`
@@ -68,9 +117,14 @@ function gameOver() {
     ctx.fillText(
       finalScore,
       sight.width / 2 - ctx.measureText(finalScore).width / 2,
-      sight.height / 2 + 40
+      sight.height / 4 + 40
     )
+
     requestId = cancelAnimationFrame(requestId)
+    sight.style.cursor = ""
+    document.querySelector('#reset-button').style.display = ""
+    document.querySelector('#doge').style.display = ""
+    // document.querySelector('#doge').style.height = sight.height * 0.1
   }
 }
 
@@ -194,31 +248,10 @@ function ammoAnimation() {
   }
 }
 
-function animateDistance() {
-  const touchPointX = (sight.width / 2 - (sight.width * world.ratio) / 2) / 1.7
-
-  ctx.strokeStyle = "white"
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(0, sight.height)
-  ctx.lineTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
-  ctx.closePath()
-  ctx.stroke()
-
-  ctx.beginPath()
-  ctx.moveTo(touchPointX, spawnArea.spawnY + spawnArea.spawnH)
-  ctx.lineTo(touchPointX - 30, spawnArea.spawnY + spawnArea.spawnH + 17)
-  ctx.lineTo(touchPointX - 5, spawnArea.spawnY + spawnArea.spawnH + 17)
-  ctx.closePath()
-  ctx.fillStyle = "white"
-  ctx.fill()
-  
-  ctx.font = "14px Arial"
-  ctx.fillStyle = "white"
-  ctx.fillText(`${duck.distance.toFixed()}m`, 20, sight.height - 5)
-}
-
 function gameEngine() {
+  document.querySelector("#reset-button").style.display = "none"
+  document.querySelector("#doge").style.display = "none"
+
   gameFrames++
 
   clearCanvas()
@@ -226,7 +259,6 @@ function gameEngine() {
   spawnArea.draw()
   hit.draw()
   duck.draw()
-  animateDistance()
   bang.draw()
 
   gunSight.draw()
@@ -243,11 +275,59 @@ function gameEngine() {
 }
 
 function startGame() {
+  document.querySelector(".game-intro").style.display = "none"
+  sight.style.display = ""
+  sight.style.alignItems = 'center'
+  sight.style.justifyContent = 'center'
   if (!requestId) {
     requestId = requestAnimationFrame(gameEngine)
   }
 }
 
 window.onload = () => {
-  startGame()
+  sight.style.display = "none"
+  sight.style.cursor = 'none'
+
+  document.querySelector('#reset-button').style.display = "none"
+  document.querySelector('#doge').style.display = "none"
+  document.querySelector('#instructions').style.display = "none"
+
+  document.getElementById("start-button").onclick = () => {
+    startGame()
+  }
+
+  document.getElementById("reset-button").onclick = () => { 
+    huntCount = 0
+    duckSpawns = 0
+    score = 0
+
+    world = new World()
+    world.createWorld()
+    spawnArea = new TargetSpawnArea(world)
+    rifle = new SniperGun()
+    rifle.switchRifle(0)
+    sniper = new Sniper(rifle)
+    duck = new Duck(spawnArea)
+    duck.randomSpawn()
+    duck.distance = world.distance
+    wind = new Wind() // z-axis affects y-axis
+    wind.randomWind()
+    bang = new Bang(click)
+    hit = new Hit(shot)
+    windRose = new WindRose()
+    gunSight = new Sight()
+
+    sight.style.cursor = "none"
+    requestId = requestAnimationFrame(gameEngine)
+  }
+
+  document.querySelector("#instructions-button").onclick = () => { 
+    document.querySelector(".game-intro").style.display = "none"
+    document.querySelector("#instructions").style.display = ""
+  }
+
+  document.querySelector("#return-button").onclick = () => { 
+      document.querySelector(".game-intro").style.display = ""
+      document.querySelector("#instructions").style.display = "none"
+    }
 }

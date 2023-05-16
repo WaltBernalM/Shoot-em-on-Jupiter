@@ -10,13 +10,86 @@
   <script src="scripts\classes.js" defer></script>
   <script src="scripts\instances.js" defer></script>
   <script src="scripts\listeners.js" defer></script>
+  <style>
+      body {
+        background-image: url("./Images/menu-background.jpg");
+        background-repeat: no-repeat;
+        background-size: auto;
+        background-color: black;
+      }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Shoot'em on Jupiter</h1>
-  </header>  
-  
-  <canvas id="sight" width="720" height="480"></canvas>
+  <main>
+    <section class="game-intro">
+      <img src="./Images/star.gif" id="star" alt="star">
+      <h1>Shoot'em on Jupiter</h1>
+      <button id="start-button">
+        <img src="./Images/walking-duck.gif" alt="walking-duck">
+        <strong>Start</strong>
+      </button>
+      <p>Use the mouse button (any) to try hunt the duck</p>
+      <strong>Don't be mad if you're that bad</strong>
+      <button id="instructions-button">
+        <img src="./Images/how-to-kill.gif" alt="how-to-kill">
+        <strong>How to kill'em</strong>
+      </button>
+    </section>
 
+    <section id="instructions">
+      <button id="return-button">
+        <strong>Return</strong>
+      </button>
+
+      <div id="article-container">
+        <article>
+          <h2>What am I seeing?</h2>
+          <p>
+            You’re behaving the epitome of a 2D Hunting Duck experience with a 3D behavior, that’s catchy. 
+            <br><br>
+            Well, you’re like seeing to a room, or a box, you’re seeing that depth effect... 
+            <br>
+            You have plenty of information, some may need you to think a bit more about what the hell is that.
+            <br>
+            You’ll experience the behavior of the parabolic shot while you try to kill those poor 8bit b*stards ducks.
+            <br><br>
+            In order to pass to the next level or world, you’ll have to kill 3 ducks...Good luck with that, the creator did his best mark around level 25, it’s hell difficult!
+          </p>
+          <img src="./Images/box-model.png" alt="box-model-img">
+        </article>
+
+        <article>
+          <h2>Why my shot is not moving straight forward?</h2>
+          <p>
+            Because you’re not playing DH from our beloved NES... 
+            <br>
+            Just kidding, but this is no lie.
+            <br><br>
+            Here comes some physiscs concepts that you had to deal with at highschoool:
+            <br>
+            What you’re experiencing the effects of wind and gravity against you and your bullet. 
+            <br>
+            That’s why you should be perceptive on what the screen is showing to you. 
+            <br>I broke my back to give you this experience dude, come on... be more intuitive.
+          </p>
+          <img src="./Images/physics-behind-1.png" alt="physics-explanation-img">
+          <img src="./Images/physics-behind-2.png" alt="physics-explanation-img">
+        </article>
+      </div>
+    </section>
+
+    <section id="game-board">
+      <canvas id="sight" width="667px" height="375px">
+        
+      </canvas>
+      <button id="reset-button"><strong>Retry</strong></button>
+      <img src="./Images/doge.gif" id="doge">
+    </section>   
+  </main>
+
+  <footer>
+    <em>Designed for PC &amp Mac.</em>
+    <em>All rights reserved.</em>
+  </footer>
 </body>
 </html>

@@ -32,10 +32,6 @@ sight.addEventListener("mousedown", function (e) {
   sniper.x = Number(tShot[0].toFixed(2))
   sniper.y = Number(tShot[1].toFixed(2))
 
-  // document.querySelector(
-  //   "#sniper-data-trans"
-  // ).innerHTML = `Ideal shot = [${sniper.x}, ${sniper.y}]`
-
   shot = sniper.shot(wind, duck, world) // runs the physics logic to  get the shot position
   
   // Animation control for missed target, prevents unwanted animations
@@ -64,14 +60,6 @@ sight.addEventListener("mousedown", function (e) {
     ) 
     
     if (sniper.ammo < 4) sniper.ammo += 1
-  } else {
-    // targetDown = false
   }
-
-  // document.querySelector(
-  //   "#shot-data"
-  // ).innerHTML = `End shot = [${shot[0].toFixed(2)}, ${shot[1].toFixed(2)}, ${shot[2].toFixed()}] @ t = ${shot[3].toFixed(
-  //   3
-  // )}s`
 })
 

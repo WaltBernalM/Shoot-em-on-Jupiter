@@ -1,16 +1,197 @@
 body, 
 html {
   cursor: default;
+  padding: 0;
+  margin: 0;
+  font-family: "Verdana";
 }
 
-canvas {
-  border: 1px solid red;
-  cursor: none;
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
 }
 
-section {
-  font-size: 20px; 
-  font-weight: bold; 
-  font-family: 'Courier New', 
-  Courier, monospace;
+#star {
+  width: 70px;
+}
+
+.game-intro {
+  padding: 0% 10%;
+  display: flex;
+  flex: row;
+}
+
+.game-intro p {
+  font-size: 20px;
+}
+
+h1 {
+  font-size: 31px;
+  color: white;
+}
+
+body section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+section p {
+  color: white;
+  position: relative;
+}
+
+button {
+  font-size: 20px;
+  background-color: #870007;
+  color: #fff;
+  padding: 0;
+  border: 0;
+  box-shadow: 0;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 6px 10px;
+}
+
+strong {
+  color: white;
+  font-size: 0.8rem;
+}
+
+
+#start-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  cursor: pointer;
+}
+#start-button img {
+  position: absolute;
+  left: 5px;
+  margin-right: 5px;
+  width: 25px;
+}
+#start-button strong {
+  font-size: 20px;
+}
+
+#doge {
+    position: absolute;
+    width: 25%;
+    bottom: 5%;
+    /* left: %; */
+    z-index: 1;
+}
+
+#reset-button {
+  z-index: 1;
+  left: 0;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+}
+
+#instructions-button {
+  position: absolute;
+  top: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+  cursor: pointer;
+  background-color: black;
+}
+#instructions-button strong {
+  font-size: 12px;
+}
+#instructions-button img {
+  margin-right: 5px;
+  width: 25px;
+}
+
+#sight {
+  border: 2px solid #f9c653;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+
+#instructions {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 5%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+#return-button {
+  width: 100px;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10%;
+  cursor: pointer;
+}
+#instructions button img {
+  width: 8px;
+}
+#instructions img {
+  width: 400px;
+  border: 3px solid purple;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+#article-container {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  align-items: center;
+}
+
+#instructions article {
+  width: 400px;
+  padding-bottom: 10%;
+}
+#instructions article p {
+  width: 400px;
+  text-align: justify;
+  font-size: 2vh;
+}
+#instructions article img {
+  padding: 0;
+  margin: 0;
+}
+
+h2 {
+  color: purple;
+  font-size: 5vh;
+  width: 400px;
+}
+
+footer {
+  position: fixed;
+  bottom: 1%;
+  color: white;
+  font-size: 1vw;
+}
+
+#instructions article img:nth-of-type(2) {
+  margin-top: 10px;
 }
