@@ -24,24 +24,58 @@ function clearCanvas() {
 }
 
 function printData() {
+  const gameInfoWidth = 210
+  const gameInfoHeight = 75
+  const gameInfoX = sight.width / 2 - gameInfoWidth / 2
+  const gameInfoY = 5
+  ctx.globalAlpha = 0.8
+  ctx.fillStyle = "gray"
+  ctx.fillRect(gameInfoX, gameInfoY, gameInfoWidth, gameInfoHeight)
+  ctx.beginPath()
+  ctx.arc(
+    gameInfoX,
+    gameInfoY + gameInfoHeight / 2,
+    gameInfoHeight / 2,
+    Math.PI / 2,
+    -Math.PI / 2
+  )
+  ctx.closePath()
+  ctx.fill()
+
+  ctx.beginPath()
+  ctx.arc(
+    gameInfoX + gameInfoWidth,
+    gameInfoY + gameInfoHeight / 2,
+    gameInfoHeight / 2,
+    -Math.PI / 2,
+    Math.PI / 2
+  )
+  ctx.fill()
+
+
   const scoreInfo = `Score: ${score}`
   ctx.font = "20px Verdana"
   ctx.fillStyle = "white"
   ctx.fillText(
     scoreInfo,
     sight.width / 2 - ctx.measureText(scoreInfo).width / 2,
-    28
+    26
   )
 
-    const levelInfo = `Level: ${world.level}
-  ${world.name} (${world.gravity}m/s^2)`
+  const levelInfo = `Level: ${world.level}`
+  const gravityInfo = `${world.name} (-${world.gravity}m/s²)`
   ctx.font = "16px Verdana"
-  ctx.fillStyle = "white"
+  ctx.fillText(
+    gravityInfo,
+    sight.width / 2 - ctx.measureText(gravityInfo).width / 2,
+    48
+  )
   ctx.fillText(
     levelInfo,
     sight.width / 2 - ctx.measureText(levelInfo).width / 2,
-    50
+    70
   )
+
   
   // Player info
   const infoWidth = 108
