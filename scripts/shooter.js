@@ -337,6 +337,9 @@ window.onload = () => {
     duckSpawns = 0
     score = 0
 
+    click = []
+    shot = []
+
     world = new World()
     world.createWorld()
     spawnArea = new TargetSpawnArea(world)
