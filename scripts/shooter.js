@@ -19,6 +19,8 @@ let huntCount = 0
 let duckSpawns = 0
 let score = 0
 
+let highestScore = 0
+
 function clearCanvas() {
   ctx.clearRect(0, 0, sight.width, sight.length)
 }
@@ -95,6 +97,41 @@ function printData() {
   ctx.fillText(`Rifle: ${sniper.rifle.name}`, 4, 13)
   ctx.fillText(`Cal: ${sniper.rifle.bulletCaliber}`, 4, 26)
   ctx.fillText(`Ducks @ ${duck.distance.toFixed()}m`, 4, 39)
+
+  // Highest Score
+  if (highestScore < score) {
+    highestScore = score
+  }
+  const highScoreInfo = `Besto Score: ${highestScore}`
+  ctx.font = "12px Verdana"
+  ctx.globalAlpha = 0.8
+  ctx.fillStyle = "black"
+  ctx.fillRect(
+    0,
+    sight.height - 20,
+    ctx.measureText(highScoreInfo).width + 10,
+    20
+  )
+
+  ctx.beginPath()
+  ctx.arc(
+    ctx.measureText(highScoreInfo).width + 10,
+    sight.height - 10,
+    10,
+    -Math.PI / 2,
+    Math.PI / 2
+  )
+  ctx.fill()
+  ctx.closePath()
+  ctx.globalAlpha = 1
+
+  
+  ctx.fillStyle = "red"
+  ctx.fillText(
+    highScoreInfo,
+    8,
+    sight.height - 5
+  )
 }
 
 function gameOver() {
@@ -124,7 +161,6 @@ function gameOver() {
     sight.style.cursor = ""
     document.querySelector('#reset-button').style.display = ""
     document.querySelector('#doge').style.display = ""
-    // document.querySelector('#doge').style.height = sight.height * 0.1
   }
 }
 
