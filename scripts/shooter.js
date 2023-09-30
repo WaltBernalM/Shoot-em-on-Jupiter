@@ -327,6 +327,7 @@ window.onload = () => {
   document.querySelector('#reset-button').style.display = "none"
   document.querySelector('#doge').style.display = "none"
   document.querySelector('#instructions').style.display = "none"
+  document.querySelector('.loading-page').style.display = "none"
 
   document.getElementById("start-button").onclick = () => {
     startGame()
