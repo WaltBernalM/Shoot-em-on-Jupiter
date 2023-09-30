@@ -28,6 +28,11 @@ body {
   height: 100vh;
   background-color: #870007;
 }
+#loading-duck,
+#loading-message {
+  padding: 0;
+  margin: 0;
+}
 
 #star {
   width: 70px;
